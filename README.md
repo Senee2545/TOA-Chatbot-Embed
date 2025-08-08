@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js Chatbot Embed
+
+This project is a simple chatbot application built with Next.js and styled using Tailwind CSS. It consists of two main pages: a chatbot interface that can be embedded in an iframe and a configuration page that allows users to customize the iframe settings.
+
+## Project Structure
+
+```
+nextjs-chatbot-embed
+├── src
+│   └── app
+│       ├── chat
+│       │   └── page.tsx         # Chatbot UI page
+│       ├── embed
+│       │   └── page.tsx         # Embed configuration page
+│       ├── components
+│       │   ├── ChatBot.tsx       # ChatBot component
+│       │   ├── EmbedForm.tsx      # Form for customizing iframe
+│       │   └── PreviewFrame.tsx    # Preview of the iframe
+│       ├── globals.css           # Global styles including Tailwind CSS
+│       └── layout.tsx            # Layout component for the application
+├── package.json                  # NPM configuration file
+├── tailwind.config.js            # Tailwind CSS configuration
+├── next.config.js                # Next.js configuration
+└── README.md                     # Project documentation
+```
+
+## Features
+
+- **Chatbot Interface**: The `/chat` page provides a simple chatbot UI that simulates chat messages. It accepts query parameters to customize its appearance, including width, height, background color, text color, button color, and border radius.
+
+- **Embed Configuration**: The `/embed` page allows users to customize the iframe settings. Users can adjust the size, colors, and border radius of the iframe and see a live preview. There is also a button to copy the iframe code for easy embedding.
 
 ## Getting Started
 
-First, run the development server:
+To get started with this project, follow these steps:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd nextjs-chatbot-embed
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. **Run the development server**:
+   ```bash
+   npm run dev
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. **Open your browser** and navigate to `http://localhost:3000/chat` to see the chatbot or `http://localhost:3000/embed` to customize the iframe.
 
-## Learn More
+## Customization
 
-To learn more about Next.js, take a look at the following resources:
+You can customize the chatbot's appearance by passing the following query parameters in the URL:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `width`: Set the width of the chatbot.
+- `height`: Set the height of the chatbot.
+- `bgColor`: Set the background color of the chatbot.
+- `textColor`: Set the text color of the chatbot.
+- `buttonColor`: Set the button color of the chatbot.
+- `borderRadius`: Set the border radius of the chatbot.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Future Improvements
 
-## Deploy on Vercel
+- Implement a backend to store user settings for the iframe.
+- Enhance the chatbot functionality with real-time messaging.
+- Add more customization options for the chatbot interface.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is open-source and available under the MIT License.
