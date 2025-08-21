@@ -636,14 +636,14 @@ return (
       </div>
       
       {/* Badge แสดงจำนวนข้อความใหม่ */}
-      {!isOpen && messages.length > 1 && (
+      {/* {!isOpen && messages.length > 1 && (
         <div 
           className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold animate-pulse"
           style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
         >
           {messages.length - 1}
         </div>
-      )}
+      )} */}
     </button>
   </div>
 )

@@ -34,6 +34,12 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
       description: 'ข้อมูลเกี่ยวกับการออกกำลังกาย และโภชนาการ',
       icon: '👥'
     },
+    { 
+      id: 'DOA-chat', 
+      name: 'DOA', 
+      description: 'ข้อมูลเกี่ยวกับApproval',
+      icon: '📑'
+    },
   ]
 
   const handleChange = (key: keyof EmbedSettings, value: string) => {

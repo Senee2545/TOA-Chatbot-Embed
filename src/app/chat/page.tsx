@@ -26,73 +26,6 @@ export default function ChatPage(props: { email: string; id: string }) {
     scrollToBottom()
   }, [messages])
 
-  // const handleSendMessage = async (e: React.FormEvent) => {
-  //   e.preventDefault()
-  //   if (input.trim() && !isLoading) {
-  //     const userMessage: Message = { text: input, sender: 'user' }
-  //     setMessages(prev => [...prev, userMessage])
-
-  //     const userInput = input
-  //     setInput('')
-  //     setIsLoading(true)
-
-  //     try {
-  //       const response = await fetch('/api/chat5', {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //         body: JSON.stringify({
-  //           messages: [{ role: 'user', content: userInput }]
-  //         }),
-  //       })
-
-  //       if (!response.ok) {
-  //         throw new Error('Network response was not ok')
-  //       }
-
-  //       const reader = response.body?.getReader()
-  //       const decoder = new TextDecoder()
-
-  //       if (reader) {
-  //         let accumulatedText = ''
-
-  //         // เพิ่ม empty bot message สำหรับ streaming
-  //         setMessages(prev => [...prev, { text: '', sender: 'bot' }])
-
-  //         while (true) {
-  //           const { done, value } = await reader.read()
-
-  //           if (done) break
-
-  //           const chunk = decoder.decode(value)
-  //           accumulatedText += chunk
-
-  //           // อัพเดทข้อความแบบ real-time
-  //           setMessages(prev => {
-  //             const newMessages = [...prev]
-  //             const lastIndex = newMessages.length - 1
-  //             newMessages[lastIndex] = {
-  //               text: accumulatedText,
-  //               sender: 'bot'
-  //             }
-  //             return newMessages
-  //           })
-  //         }
-  //       }
-
-  //     } catch (error) {
-  //       console.error('Error:', error)
-  //       setMessages(prev => [...prev, {
-  //         text: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง 😔',
-  //         sender: 'bot'
-  //       }])
-  //     } finally {
-  //       setIsLoading(false)
-  //     }
-  //   }
-  // }
-
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
     if (input.trim() && !isLoading) {
@@ -104,7 +37,7 @@ export default function ChatPage(props: { email: string; id: string }) {
         setIsLoading(true)
 
         try {
-            const response = await fetch('/api/chat5', {
+            const response = await fetch('/api/DOA-chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

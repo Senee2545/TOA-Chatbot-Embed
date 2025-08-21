@@ -1,6 +1,4 @@
 import { redirect } from 'next/navigation'
-
-
 import { createClient } from '@/lib/supabase/server'
 import ChatPage from '../chat/page'
 
