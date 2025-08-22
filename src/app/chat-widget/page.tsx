@@ -23,6 +23,7 @@ interface ChatSettings {
 }
 
 export default function ChatWidget(props: { email: string; id: string }) {
+  const [showMenu, setShowMenu] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
       //{ text: `สวัสดีครับ คุณ ${props.email}! ผมสามารถช่วยอะไรคุณได้บ้างครับ?`, sender: 'bot' }
     ])
@@ -408,6 +409,7 @@ const handleSendMessage = async (e: React.FormEvent) => {
                 </div>
             </div>
           </div>
+          
           <button
     onClick={() => setIsOpen(false)}
     className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:bg-opacity-20"
@@ -529,22 +531,85 @@ return (
             <div>
               <div className="font-medium text-sm">แชทบอท</div>
               <div className="text-xs opacity-80">
-        {isLoading ? 'กำลังพิมพ์...' : 'ออนไลน์'}
-      </div>
+              {isLoading ? 'กำลังพิมพ์...' : 'ออนไลน์'}
+            </div>
             </div>
           </div>
-          <button
-    onClick={() => setIsOpen(false)}
-    className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:bg-opacity-20"
-    style={{ 
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-      color: '#ffffff'
-    }}
-  >
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-    </svg>
-  </button>
+
+                    <div className="flex items-center space-x-1">
+            {/* ปุ่มเมนู */}
+            <div className="relative">
+              <button
+                onClick={() => setShowMenu(!showMenu)}
+                className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:bg-opacity-20"
+                style={{ 
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  color: '#ffffff'
+                }}
+              >
+                {/* <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01" />
+                </svg> */}
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+
+              </button>
+              
+              {/* เมนูแบบเลื่อนลง */}
+              {showMenu && (
+                <div 
+                  className="absolute top-10 right-0 bg-white rounded-lg shadow-lg py-2 z-50 min-w-[180px]"
+                  style={{ border: '1px solid #e1e5e9' }}
+                >
+                  {/* คู่มือการใช้งาน */}
+                  <button
+                    onClick={() => {
+                      window.open('/manual/manual.txt', '_blank')
+                      setShowMenu(false)
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm bg-white hover:bg-gray-300 flex items-center space-x-2"
+                    style={{ color: settings.textColor }}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>คู่มือการใช้งาน</span>
+                  </button>
+                  
+                  {/* Private Chat */}
+
+                  {/* <button
+                    onClick={() => {
+                      window.open('/', '_blank')
+                      setShowMenu(false)
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm bg-white hover:bg-gray-300 flex items-center space-x-2"
+                    style={{ color: settings.textColor }}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span>Private Chat</span>
+                  </button> */}
+                </div>
+              )}
+            </div>
+            
+            {/* ปุ่มปิด */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:bg-opacity-20"
+              style={{ 
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                color: '#ffffff'
+              }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Messages */}

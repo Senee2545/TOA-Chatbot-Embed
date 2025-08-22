@@ -27,7 +27,7 @@ export async function getDOARetriever() {
         queryName: 'match_documents_doa',
     });
 
-    const retriever = vectorStore.asRetriever({ k: 5 });
+    const retriever = vectorStore.asRetriever({ k: 10 });
 
     return retriever;
 

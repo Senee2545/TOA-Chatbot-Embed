@@ -22,21 +22,21 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
 
   // ฐานข้อมูลที่มีให้เลือก
   const dataSources = [
-    { 
-      id: 'chat5', 
-      name: 'ข้อมูลบุคลากร', 
+    {
+      id: 'chat5',
+      name: 'ข้อมูลบุคลากร',
       description: 'ข้อมูลพนักงาน ตำแหน่ง และแผนกต่างๆ',
       icon: '📋'
     },
-    { 
-      id: 'chat8', 
-      name: 'การออกกำลังกาย', 
+    {
+      id: 'chat8',
+      name: 'การออกกำลังกาย',
       description: 'ข้อมูลเกี่ยวกับการออกกำลังกาย และโภชนาการ',
       icon: '👥'
     },
-    { 
-      id: 'DOA-chat', 
-      name: 'DOA', 
+    {
+      id: 'DOA-chat',
+      name: 'DOA',
       description: 'ข้อมูลเกี่ยวกับApproval',
       icon: '📑'
     },
@@ -87,7 +87,12 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-50 to-purple-50 px-6 py-4 border-b">
         <h2 className="text-xl font-semibold text-gray-800 flex items-center">
-          <span className="text-2xl mr-2">⚙️</span>
+          <span className="text-2xl mr-2">
+            {/* Setting Icon */}
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+            </svg>
+          </span>
           การตั้งค่า
         </h2>
         <p className="text-sm text-gray-600 mt-1">
@@ -99,18 +104,20 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
 
         {/* เพิ่มส่วนเลือกฐานข้อมูล */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            🗄️ เลือกฐานข้อมูล
+          <label className="flex items-center text-sm font-medium text-gray-700 mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 mr-2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+            </svg>
+            เลือกฐานข้อมูล
           </label>
           <div className="space-y-3">
             {dataSources.map((source) => (
               <label
                 key={source.id}
-                className={`flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-50 ${
-                  settings.dataSource === source.id
+                className={`flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-50 ${settings.dataSource === source.id
                     ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
                     : 'border-gray-200 hover:border-gray-300'
-                }`}
+                  }`}
               >
                 <input
                   type="radio"
@@ -141,8 +148,11 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
 
         {/* Color Presets */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            🎨 ธีมสีสำเร็จรูป
+          <label className="flex items-center text-sm font-medium text-gray-700 mb-3 ">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 mr-2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
+            </svg>
+            ธีมสีสำเร็จรูป
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
             {presetColors.map((preset) => (
@@ -153,11 +163,11 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
                 title={`ธีม ${preset.name}`}
               >
                 <div className="flex items-center space-x-1">
-                  <div 
+                  <div
                     className="w-4 h-4 rounded border"
                     style={{ backgroundColor: preset.bg }}
                   />
-                  <div 
+                  <div
                     className="w-4 h-4 rounded border"
                     style={{ backgroundColor: preset.button }}
                   />
@@ -172,8 +182,11 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
 
         {/* ขนาด */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            📐 ขนาด
+          <label className="flex items-center text-sm font-medium text-gray-700 mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 mr-2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6A1.125 1.125 0 0 1 2.25 10.875v-3.75ZM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-8.25ZM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25A1.125 1.125 0 0 1 3.75 18.375v-2.25Z" />
+            </svg>
+            ขนาด
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -209,8 +222,11 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
 
         {/* สี */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            🎨 สีและธีม
+          <label className="flex items-center text-sm font-medium text-gray-700 mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 mr-2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
+            </svg>
+            สีและธีม
           </label>
           <div className="space-y-4">
             {/* สีพื้นหลัง */}
@@ -234,7 +250,7 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
                 />
               </div>
             </div>
-            
+
             {/* สีข้อความ */}
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-2">
@@ -256,7 +272,7 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
                 />
               </div>
             </div>
-            
+
             {/* สีปุ่ม */}
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-2">
@@ -283,8 +299,11 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
 
         {/* มุมโค้ง */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            📱 มุมโค้ง
+          <label className="flex items-center text-sm font-medium text-gray-700 mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 mr-2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
+            </svg>
+            มุมโค้ง
           </label>
           <div className="space-y-2">
             <input
@@ -308,11 +327,10 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
         {/* Save Button */}
         <button
           onClick={handleSaveSettings}
-          className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 ${
-            saved
+          className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 ${saved
               ? 'bg-green-500 text-white'
               : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md'
-          }`}
+            }`}
         >
           {saved ? '✅ บันทึกเรียบร้อย' : '💾 บันทึกการตั้งค่า'}
         </button>

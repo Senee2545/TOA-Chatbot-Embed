@@ -108,9 +108,11 @@ export async function GET() {
             .map((row: any, index: number) => {
                 try {
                     const no = getValueInsensitive(row, ["No.", "No"]);
+                    const category = getValueInsensitive(row, ["category"]);
                     const group = getValueInsensitive(row, ["group"]);
                     const subGroup = getValueInsensitive(row, ["sub group"]);
                     const description = getValueInsensitive(row, ["Description"]);
+                    
 
                     let businessActivity = "";
                     let groupLine = "";
@@ -125,6 +127,7 @@ export async function GET() {
 
                     const pageContent = `
                         No.: ${no || "-"}
+                        Category: ${category || "-"}
                         Business Activity: ${businessActivity || "-"}
                         ${groupLine}
                         ${description || ""}
@@ -154,6 +157,8 @@ export async function GET() {
                         "Business Activity": businessActivity,
                         group: group,
                         "sub group": subGroup,
+                        "Category": category,
+                    
                     };
 
                     return new Document<Record<string, any>>({

@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import Link from 'next/link'
 import { ResponseStream } from '../components/response-stream'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 interface Message {
   text: string
@@ -18,6 +20,31 @@ export default function ChatPage(props: { email: string; id: string }) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [isLoading, setIsLoading] = useState(false)
 
+  // เพิ่ม state ใน component
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const router = useRouter()
+
+  // เพิ่มฟังก์ชัน logout
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.signOut()
+
+      if (error) {
+        console.error('Logout error:', error)
+        alert('เกิดข้อผิดพลาดในการออกจากระบบ')
+      } else {
+        router.push('/')
+      }
+    } catch (error) {
+      console.error('Logout error:', error)
+      alert('เกิดข้อผิดพลาดในการออกจากระบบ')
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
@@ -29,49 +56,49 @@ export default function ChatPage(props: { email: string; id: string }) {
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
     if (input.trim() && !isLoading) {
-        const userMessage: Message = { text: input, sender: 'user' }
-        setMessages(prev => [...prev, userMessage])
+      const userMessage: Message = { text: input, sender: 'user' }
+      setMessages(prev => [...prev, userMessage])
 
-        const userInput = input
-        setInput('')
-        setIsLoading(true)
+      const userInput = input
+      setInput('')
+      setIsLoading(true)
 
-        try {
-            const response = await fetch('/api/DOA-chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    messages: [{ role: 'user', content: userInput }]
-                }),
-            })
+      try {
+        const response = await fetch('/api/DOA-chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messages: [{ role: 'user', content: userInput }]
+          }),
+        })
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok')
-            }
-
-            // รับ JSON response
-            const data = await response.json()
-            
-            // เพิ่มข้อความบอทที่มี JSON format
-            const botMessage: Message = { 
-                text: JSON.stringify(data.content), // ห่อด้วย JSON.stringify เพื่อให้ ResponseStream ใช้ JSON.parse() ได้
-                sender: 'bot'
-            }
-            setMessages(prev => [...prev, botMessage])
-
-        } catch (error) {
-            console.error('Error:', error)
-            setMessages(prev => [...prev, {
-                text: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง 😔',
-                sender: 'bot'
-            }])
-        } finally {
-            setIsLoading(false)
+        if (!response.ok) {
+          throw new Error('Network response was not ok')
         }
+
+        // รับ JSON response
+        const data = await response.json()
+
+        // เพิ่มข้อความบอทที่มี JSON format
+        const botMessage: Message = {
+          text: JSON.stringify(data.content), // ห่อด้วย JSON.stringify เพื่อให้ ResponseStream ใช้ JSON.parse() ได้
+          sender: 'bot'
+        }
+        setMessages(prev => [...prev, botMessage])
+
+      } catch (error) {
+        console.error('Error:', error)
+        setMessages(prev => [...prev, {
+          text: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง 😔',
+          sender: 'bot'
+        }])
+      } finally {
+        setIsLoading(false)
+      }
     }
-}
+  }
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
@@ -80,7 +107,8 @@ export default function ChatPage(props: { email: string; id: string }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-3 rounded-full text-xl">
+              {/* Logo */}
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full flex items-center justify-center">
                 🤖
               </div>
               <div>
@@ -95,9 +123,9 @@ export default function ChatPage(props: { email: string; id: string }) {
                 <Link href="/embed" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
                   สร้างแชทบอท
                 </Link>
-                <Link href="/" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                {/* <Link href="/" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
                   หน้าแรก
-                </Link>
+                </Link> */}
               </nav>
               <div className="relative">
                 <button
@@ -145,6 +173,27 @@ export default function ChatPage(props: { email: string; id: string }) {
                         <div className="text-xs text-gray-600 font-mono bg-white px-2 py-1 rounded border break-all">
                           {props.id}
                         </div>
+                      </div>
+                      <div className="pt-3 border-t border-gray-200">
+                        <button
+                          onClick={handleLogout}
+                          disabled={isLoggingOut}
+                          className="w-full bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-lg flex items-center justify-center space-x-2 font-medium"
+                        >
+                          {isLoggingOut ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                              <span>กำลังออกจากระบบ...</span>
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                              </svg>
+                              <span>ออกจากระบบ</span>
+                            </>
+                          )}
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -212,6 +261,28 @@ export default function ChatPage(props: { email: string; id: string }) {
                     {props.id.length > 20 ? `${props.id.substring(0, 20)}...` : props.id}
                   </div>
                 </div>
+
+                <div className="pt-2">
+                  <button
+                    onClick={handleLogout}
+                    disabled={isLoggingOut}
+                    className="w-full bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 text-sm font-medium"
+                  >
+                    {isLoggingOut ? (
+                      <>
+                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>กำลังออก...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span>ออกจากระบบ</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -248,15 +319,15 @@ export default function ChatPage(props: { email: string; id: string }) {
               >
                 <div className={`flex items-start max-w-[85%] md:max-w-xs lg:max-w-md ${msg.sender === 'user' ? 'flex-row-reverse gap-x-4' : 'gap-x-4'}`}>
                   <div className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${msg.sender === 'user'
-                      ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-sm'
-                      : 'bg-gray-200 text-gray-600'
+                    ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-sm'
+                    : 'bg-gray-200 text-gray-600'
                     }`}>
                     {msg.sender === 'user' ? props.email.charAt(0).toUpperCase() : '🤖'}
                   </div>
                   <div
                     className={`px-3 md:px-4 py-2 md:py-3 rounded-lg transition-all duration-200 hover:shadow-md text-sm md:text-base ${msg.sender === 'user'
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-br-none'
-                        : 'bg-white md:bg-gray-100 text-gray-800 rounded-bl-none shadow-sm'
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-br-none'
+                      : 'bg-white md:bg-gray-100 text-gray-800 rounded-bl-none shadow-sm'
                       }`}
                   >
                     {/* ใช้ ResponseStream สำหรับข้อความบอท */}

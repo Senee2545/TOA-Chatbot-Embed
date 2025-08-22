@@ -84,9 +84,9 @@ export default function EmbedPage() {
           {/* Navigation */}
           <div className="flex items-center justify-between mb-6">
             <nav className="flex items-center space-x-4">
-              <Link href="/" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+              {/* <Link href="/" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
                 หน้าแรก
-              </Link>
+              </Link> */}
               <Link href="/protected" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
                 แชท
               </Link>
@@ -142,7 +142,11 @@ export default function EmbedPage() {
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
               <div className="bg-gradient-to-r from-green-50 to-blue-50 px-6 py-4 border-b">
                 <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-                  <span className="text-xl mr-2">🔗</span>
+                  <span className="text-xl mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+                    </svg>
+                  </span>
                   โค้ดสำหรับฝังในเว็บไซต์
                 </h3>
                 <p className="text-sm text-gray-600 mt-1">
