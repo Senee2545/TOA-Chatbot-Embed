@@ -139,7 +139,7 @@ export async function GET() {
                         - EVP: ${getValueInsensitive(row, ["EVP"]) || "ไม่ระบุ"}
                         - SVP: ${getValueInsensitive(row, ["SVP"]) || "ไม่ระบุ"}
                         - Div. Head: ${getValueInsensitive(row, ["Div. Head"]) || "ไม่ระบุ"}
-                        - SGH (Sales only): ${getValueInsensitive(row, ["SGH (Sales only)", "SGH\n(Sales only)"]) || "ไม่ระบุ"}
+                        - SGH (Sales only): ${getValueInsensitive(row, ["SGH\r\n(Sales only)"]) || "ไม่ระบุ"}
                         - Dept. Head: ${getValueInsensitive(row, ["Dept. Head"]) || "ไม่ระบุ"}
 
                         การอนุมัติร่วม: ${getValueInsensitive(row, ["Co Approval"]) || "ไม่มี"}

@@ -11,6 +11,50 @@ interface Message {
   sender: 'user' | 'bot'
 }
 
+function linkify(text: string) {
+  const urlRegex = /(https?:\/\/[^\s<>()]+)/g
+  return text.replace(
+    urlRegex,
+    (url) =>
+      `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline hover:text-blue-800">${url}</a>`
+  )
+}
+
+function TypewriterLink({
+  text,
+  speed = 20,
+  className = "",
+}: {
+  text: string
+  speed?: number
+  className?: string
+}) {
+  const [i, setI] = useState(0)
+
+  useEffect(() => {
+    setI(0)
+    const id = setInterval(() => {
+      setI(prev => {
+        if (prev >= text.length) {
+          clearInterval(id)
+          return prev
+        }
+        return prev + 1
+      })
+    }, speed)
+    return () => clearInterval(id)
+  }, [text, speed])
+
+  const current = text.slice(0, i)
+
+  return (
+    <div
+      className={className}
+      dangerouslySetInnerHTML={{ __html: linkify(current) }}
+    />
+  )
+}
+
 export default function ChatPage(props: { email: string; id: string }) {
   const [messages, setMessages] = useState<Message[]>([
     //{ text: `สวัสดีครับ คุณ ${props.email}! ผมสามารถช่วยอะไรคุณได้บ้างครับ?`, sender: 'bot' }
@@ -99,6 +143,35 @@ export default function ChatPage(props: { email: string; id: string }) {
       }
     }
   }
+
+  // เรียก API /api/DOA-chat
+  const greeted = useRef(false)
+  useEffect(() => {
+    if (greeted.current) return
+    greeted.current = true
+
+    ;(async () => {
+      try {
+        const res = await fetch('/api/DOA-chat', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ messages: [] }), 
+        })
+        if (!res.ok) return
+        const data = await res.json()
+        setMessages(prev => [...prev, 
+          { text: JSON.stringify(data.content), sender: 'bot' }
+        ])
+      } catch (e) {
+        console.error('greeting error', e)
+      }
+    })()
+}, [])
+
+
+
+
+
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
@@ -331,7 +404,7 @@ export default function ChatPage(props: { email: string; id: string }) {
                       }`}
                   >
                     {/* ใช้ ResponseStream สำหรับข้อความบอท */}
-                    {msg.sender === 'bot' ? (
+                    {/* {msg.sender === 'bot' ? (
                       msg.text ? (
                         <ResponseStream
                           textStream={JSON.parse(msg.text)}
@@ -350,7 +423,44 @@ export default function ChatPage(props: { email: string; id: string }) {
                     ) : (
                       // ข้อความผู้ใช้แสดงปกติ
                       msg.text
-                    )}
+                    )} */}
+                    {msg.sender === 'bot' ? (
+  msg.text ? (() => {
+    const parsed = JSON.parse(msg.text)
+
+    // ถ้าเป็น string → เช็คว่ามีลิงก์มั้ย
+   if (typeof parsed === 'string') {
+      // พิมพ์ทีละตัว + ลิงก์คลิกได้
+      return (
+        <TypewriterLink
+          text={parsed}
+          speed={20}
+          className="whitespace-pre-line"
+        />
+      )
+    }
+
+    // ถ้าไม่ใช่ string → ใช้ ResponseStream ปกติ
+    return (
+      <ResponseStream
+        textStream={parsed}
+        mode="typewriter"
+        speed={20}
+        as="div"
+        className="whitespace-pre-line"
+      />
+    )
+  })() : (
+    <div className="flex items-center space-x-2">
+      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+    </div>
+  )
+) : (
+  msg.text
+)}
+
                   </div>
                 </div>
               </div>

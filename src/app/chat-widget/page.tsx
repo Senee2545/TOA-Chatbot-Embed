@@ -22,6 +22,50 @@ interface ChatSettings {
   dataSource: string
 }
 
+function linkify(text: string) {
+  const urlRegex = /(https?:\/\/[^\s<>()]+)/g
+  return text.replace(
+    urlRegex,
+    (url) =>
+      `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline hover:text-blue-800">${url}</a>`
+  )
+}
+
+function TypewriterLink({
+  text,
+  speed = 20,
+  className = "",
+}: {
+  text: string
+  speed?: number
+  className?: string
+}) {
+  const [i, setI] = useState(0)
+
+  useEffect(() => {
+    setI(0)
+    const id = setInterval(() => {
+      setI(prev => {
+        if (prev >= text.length) {
+          clearInterval(id)
+          return prev
+        }
+        return prev + 1
+      })
+    }, speed)
+    return () => clearInterval(id)
+  }, [text, speed])
+
+  const current = text.slice(0, i)
+
+  return (
+    <div
+      className={className}
+      dangerouslySetInnerHTML={{ __html: linkify(current) }}
+    />
+  )
+}
+
 export default function ChatWidget(props: { email: string; id: string }) {
   const [showMenu, setShowMenu] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
