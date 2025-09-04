@@ -41,5 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 # Custom - ignore specific files
-/src/app/lib/llm-tool.ts
-/src/app/api/DOA-chat-version1/route.ts
+# /src/lib/llm-tool.ts
+# /src/api/DOA-chat-version1/route.ts
+
