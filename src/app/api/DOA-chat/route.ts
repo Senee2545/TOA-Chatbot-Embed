@@ -43,12 +43,84 @@ export async function POST(req: NextRequest) {
     const { data } = await supabase.auth.getUser();
     const userId = data.user?.id;
 
-    const sessionId = userId || 'widget_anonymous';
-
-    console.log('🔑 Using sessionId:', sessionId);
-
     const body = await req.json();
     const messages: any[] = body.messages ?? [];
+    
+    let sessionId = userId || 'widget_anonymous';
+    let isNewSession = false;
+    let sessionUpdated = false;
+
+    if (userId) {
+        // ถ้ามี userId ใช้เป็น sessionId (ไม่หมดอายุ)
+        sessionId = userId;
+        console.log('Using userId as sessionId:', userId);
+
+        const currentSessionId = body.sessionId;
+        if (currentSessionId !== userId) {
+            sessionUpdated = true;
+            console.log('Client sessionId mismatch, needs update');
+        }
+    } else {
+        // ถ้าไม่มี userId (anonymous) จัดการ widget session ที่หมดอายุ
+        const currentSessionId = body.sessionId;
+        
+        if (currentSessionId && currentSessionId !== 'widget_anonymous') {
+            // ตรวจสอบว่า sessionId เป็นรูปแบบที่เราสร้าง และยังไม่หมดอายุ
+            try {
+                const parts = currentSessionId.split('_');
+                if (parts.length >= 3 && parts[0] === 'widget') {
+                    const timestampStr = parts[1];
+                    const timestamp = parseInt(timestampStr, 36);
+                    const now = Date.now();
+                    const oneDay = 24 * 60 * 60 * 1000; // 1 วัน
+                    
+                    if (now - timestamp < oneDay) {
+                        console.log('Using existing valid sessionId:', currentSessionId);
+                        sessionId = currentSessionId;
+                    } else {
+                        console.log('SessionId expired, creating new one');
+                        isNewSession = true;
+                        sessionUpdated = true;
+                    }
+                } else {
+                    console.log('Invalid sessionId format, creating new one');
+                    isNewSession = true;
+                    sessionUpdated = true;
+                }
+            } catch (error) {
+                console.log('Error parsing sessionId, creating new one:', error);
+                isNewSession = true;
+                sessionUpdated = true;
+            }
+        } else {
+            console.log('No sessionId provided, creating new one');
+            isNewSession = true;
+            sessionUpdated = true;
+        }
+
+        // สร้าง sessionId ใหม่สำหรับ anonymous widget
+        if (isNewSession) {
+            let newSessionId;
+            let attempts = 0;
+            const maxAttempts = 10;
+            
+            do {
+                const timestamp = Date.now().toString(36);
+                const random = Math.random().toString(36).substring(2, 15);
+                newSessionId = `widget_${timestamp}_${random}`;
+                attempts++;
+                
+                if (newSessionId !== currentSessionId) {
+                    break;
+                }
+            } while (attempts < maxAttempts);
+            
+            sessionId = newSessionId;
+            console.log('Created new anonymous sessionId:', sessionId);
+        }
+    }
+
+    console.log('🔑 Using sessionId:', sessionId);
 
     // ถ้าเพิ่งเริ่ม (ไม่มีข้อความเลย) → ส่ง greeting กลับทันที
     if (messages.length === 0) {
@@ -70,6 +142,9 @@ export async function POST(req: NextRequest) {
     รายละเอียดเพิ่มเติม: https://doa.toagroup.com/doa`,
             type: "text",
             timestamp: new Date().toISOString(),
+            sessionId: sessionId,
+            isNewSession: isNewSession,
+            sessionUpdated: sessionUpdated
         });
     }
 
@@ -147,7 +222,10 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
             content: response.content,
             type: "text",
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            sessionId: sessionId,
+            isNewSession: isNewSession,
+            sessionUpdated: sessionUpdated
         });
     } catch (error) {
         console.error('LLM Error:', error);

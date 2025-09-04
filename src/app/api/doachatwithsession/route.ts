@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     if (userId) {
         // ถ้ามี userId ใช้เป็น sessionId (ไม่หมดอายุ)
         sessionId = userId;
-        console.log('👤 Using userId as sessionId:', userId);
+        console.log('Using userId as sessionId:', userId);
     } else {
         // ถ้าไม่มี userId (anonymous) จัดการ widget session ที่หมดอายุ
         const currentSessionId = body.sessionId;
@@ -66,22 +66,22 @@ export async function POST(req: NextRequest) {
                     const oneDay = 24 * 60 * 60 * 1000; // 1 วัน
                     
                     if (now - timestamp < oneDay) {
-                        console.log('🔄 Using existing valid sessionId:', currentSessionId);
+                        console.log('Using existing valid sessionId:', currentSessionId);
                         sessionId = currentSessionId;
                     } else {
-                        console.log('⏰ SessionId expired, creating new one');
+                        console.log('SessionId expired, creating new one');
                         isNewSession = true;
                     }
                 } else {
-                    console.log('❌ Invalid sessionId format, creating new one');
+                    console.log('Invalid sessionId format, creating new one');
                     isNewSession = true;
                 }
             } catch (error) {
-                console.log('❌ Error parsing sessionId, creating new one:', error);
+                console.log('Error parsing sessionId, creating new one:', error);
                 isNewSession = true;
             }
         } else {
-            console.log('🆕 No sessionId provided, creating new one');
+            console.log('No sessionId provided, creating new one');
             isNewSession = true;
         }
 
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
         }
     }
 
-    console.log('🔑 Final sessionId:', sessionId);
+    console.log('Final sessionId:', sessionId);
 
     // ถ้าเพิ่งเริ่ม (ไม่มีข้อความเลย) → ส่ง greeting กลับทันที
     if (messages.length === 0) {

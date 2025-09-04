@@ -46,7 +46,12 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
       description: 'ข้อมูลเกี่ยวกับApproval',
       icon: ''
     },
-    
+    {
+      id: 'DOA-chat-version1',
+      name: 'DOA-chat-version1',
+      description: 'ข้อมูลเกี่ยวกับApproval',
+      icon: ''
+    },
   ]
 
   const handleChange = (key: keyof EmbedSettings, value: string) => {

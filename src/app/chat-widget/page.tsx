@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
@@ -92,7 +93,7 @@ export default function ChatWidget(props: { email: string; id: string }) {
       const savedSessionId = localStorage.getItem('doa_chat_session_id');
       if (savedSessionId) {
         setSessionId(savedSessionId);
-        console.log('📱 Loaded sessionId from localStorage:', savedSessionId);
+        console.log('Loaded sessionId from localStorage:', savedSessionId);
       }
     }
   }, []);
@@ -149,10 +150,19 @@ useEffect(() => {
 const greetedKeyRef = useRef<string | null>(null)
 
 // helper: push ข้อความบอท + mark complete
-const pushBotMessage = (content: string) => {
+const pushBotMessage = (content: string, apiResponse?: any) => {
   // ยังพิมพ์อยู่ → ให้ TypewriterLink ทำงาน
   setMessages(prev => [...prev, { text: JSON.stringify(content), sender: 'bot', isCompleted: false }])
   // mark เสร็จทีหลังเพื่อหยุด typewriter (ปรับเวลาได้)
+
+
+    // 🆕 เช็ค sessionUpdated
+  if (apiResponse?.sessionUpdated && apiResponse?.sessionId) {
+    setSessionId(apiResponse.sessionId)
+    localStorage.setItem('doa_chat_session_id', apiResponse.sessionId)
+    console.log('🔄 Updated sessionId:', apiResponse.sessionId)
+  }
+
   setTimeout(() => {
     setMessages(prev => {
       const next = [...prev]
@@ -175,7 +185,7 @@ useEffect(() => {
       const res = await fetch(api, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [] }), // ← สำคัญ: ให้ API ส่ง greeting
+        body: JSON.stringify({ messages: [], sessionId: sessionId}), // ← สำคัญ: ให้ API ส่ง greeting
       })
       if (!res.ok) return
       const data = await res.json()
@@ -185,7 +195,7 @@ useEffect(() => {
       console.error('greeting (center) error:', e)
     }
   })()
-}, [settings.position, settings.dataSource])
+}, [settings.position, settings.dataSource, sessionId])
 
 // Greeting สำหรับ Embed Mode (bottom-right) — ยิงเมื่อเปิดวิซเจ็ตครั้งแรก/เปลี่ยน dataSource
 useEffect(() => {
@@ -200,7 +210,7 @@ useEffect(() => {
       const res = await fetch(api, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [] }),
+        body: JSON.stringify({ messages: [], sessionId: sessionId }),
       })
       if (!res.ok) return
       const data = await res.json()
@@ -210,7 +220,7 @@ useEffect(() => {
       console.error('greeting (embed) error:', e)
     }
   })()
-}, [isOpen, settings.position, settings.dataSource])
+}, [isOpen, settings.position, settings.dataSource, sessionId])
 
 
 
@@ -262,6 +272,13 @@ const handleSendMessage = async (e: React.FormEvent) => {
         // รับ JSON response
         const data = await response.json()
         //console.log('📥 API response data:', data)
+
+        // เช็ค sessionUpdated
+        if (data.sessionUpdated && data.sessionId) {
+          setSessionId(data.sessionId)
+          localStorage.setItem('doa_chat_session_id', data.sessionId)
+          console.log('Updated sessionId from chat:', data.sessionId)
+        }
         
         // เพิ่มข้อความบอทแบบยังไม่เสร็จ (จะมี typewriter animation)
         const botMessage: Message = { 
@@ -299,43 +316,69 @@ const handleSendMessage = async (e: React.FormEvent) => {
     }
   }
 // แก้ในส่วนการแสดงผล Messages (ทั้ง Preview และ Embed Mode)
-  const renderMessage = (msg: Message) => {
-    if (msg.sender === 'bot') {
-      //const parsed = JSON.parse(msg.text)
-      if (msg.text) {
-        //  ถ้าข้อความเสร็จแล้ว แสดงปกติ ไม่ใช้ ResponseStream
-        if (msg.isCompleted) {
+const renderMessage = (msg: Message) => {
+  if (msg.sender === 'bot') {
+    if (msg.text) {
+      // ถ้าข้อความเสร็จแล้ว แสดงปกติ
+      if (msg.isCompleted) {
+        const parsed = JSON.parse(msg.text)
+        
+        // ถ้าเป็น string แสดงพร้อม linkify
+        if (typeof parsed === 'string') {
           return (
-            <div className="whitespace-pre-line">
-              {JSON.parse(msg.text)}
-            </div>
+            <div 
+              className="whitespace-pre-line"
+              dangerouslySetInnerHTML={{ __html: linkify(parsed) }}
+            />
           )
-        } else {
-          //  ถ้ายังไม่เสร็จ ใช้ ResponseStream (สำหรับ streaming)
+        }
+        
+        // ถ้าไม่ใช่ string → แสดงตามปกติ
+        return (
+          <div className="whitespace-pre-line">
+            {JSON.stringify(parsed)}
+          </div>
+        )
+      } else {
+        // ถ้ายังไม่เสร็จ ใช้ typewriter effect
+        const parsed = JSON.parse(msg.text)
+        
+        // ถ้าเป็น string → ใช้ TypewriterLink
+        if (typeof parsed === 'string') {
           return (
-            <ResponseStream
-              textStream={JSON.parse(msg.text)}
-              mode="typewriter"
+            <TypewriterLink
+              text={parsed}
               speed={20}
-              as="div"
               className="whitespace-pre-line"
             />
           )
         }
-      } else {
+        
+        // ถ้าไม่ใช่ string → ใช้ ResponseStream
         return (
-          <div className="flex items-center space-x-1">
-            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-          </div>
+          <ResponseStream
+            textStream={parsed}
+            mode="typewriter"
+            speed={20}
+            as="div"
+            className="whitespace-pre-line"
+          />
         )
       }
     } else {
-      // ข้อความผู้ใช้แสดงปกติ
-      return msg.text
+      return (
+        <div className="flex items-center space-x-1">
+          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+        </div>
+      )
     }
+  } else {
+    // ข้อความผู้ใช้แสดงปกติ
+    return msg.text
   }
+}
 
 
   // สำหรับ Preview Mode (center)
