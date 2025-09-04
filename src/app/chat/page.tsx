@@ -425,41 +425,41 @@ export default function ChatPage(props: { email: string; id: string }) {
                       msg.text
                     )} */}
                     {msg.sender === 'bot' ? (
-  msg.text ? (() => {
-    const parsed = JSON.parse(msg.text)
+                      msg.text ? (() => {
+                        const parsed = JSON.parse(msg.text)
 
-    // ถ้าเป็น string → เช็คว่ามีลิงก์มั้ย
-   if (typeof parsed === 'string') {
-      // พิมพ์ทีละตัว + ลิงก์คลิกได้
-      return (
-        <TypewriterLink
-          text={parsed}
-          speed={20}
-          className="whitespace-pre-line"
-        />
-      )
-    }
+                        // ถ้าเป็น string → เช็คว่ามีลิงก์มั้ย
+                        if (typeof parsed === 'string') {
+                          // พิมพ์ทีละตัว + ลิงก์คลิกได้
+                          return (
+                            <TypewriterLink
+                              text={parsed}
+                              speed={20}
+                              className="whitespace-pre-line"
+                            />
+                          )
+                        }
 
-    // ถ้าไม่ใช่ string → ใช้ ResponseStream ปกติ
-    return (
-      <ResponseStream
-        textStream={parsed}
-        mode="typewriter"
-        speed={20}
-        as="div"
-        className="whitespace-pre-line"
-      />
-    )
-  })() : (
-    <div className="flex items-center space-x-2">
-      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-    </div>
-  )
-) : (
-  msg.text
-)}
+                        // ถ้าไม่ใช่ string → ใช้ ResponseStream ปกติ
+                        return (
+                          <ResponseStream
+                            textStream={parsed}
+                            mode="typewriter"
+                            speed={20}
+                            as="div"
+                            className="whitespace-pre-line"
+                          />
+                        )
+                      })() : (
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        </div>
+                      )
+                    ) : (
+                      msg.text
+                    )}
 
                   </div>
                 </div>

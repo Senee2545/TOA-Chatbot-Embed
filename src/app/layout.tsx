@@ -5,7 +5,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Chatbot Embed',
+  title: 'TOA Chatbot Embed',
   description: 'Customizable chatbot embed solution',
 }
 

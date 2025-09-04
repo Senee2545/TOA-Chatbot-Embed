@@ -1,0 +1,141 @@
+{
+  "sourceInfo": {
+    "sourceFile": "DOA_CUSTOME_TEST.xlsx",
+    "sheetName": "DOA_Data_from_IA",
+    "processedDate": "2025-09-04T04:27:39.679Z",
+    "totalCategories": 10,
+    "totalOriginalRows": 110
+  },
+  "documents": [
+    {
+      "id": 1,
+      "pageContent": "Category: 1. EMPLOYEE BENEFITS ผลประโยชน์พนักงาน\nNo.: 1.1 Business Activity: Payroll Verification prior to Payment\r\nการตรวจสอบเพื่อเสนออนุมัติการจ่ายเงินเดือนพนักงาน\nNo.: 1.2 Business Activity: Training Expenses - Domestic (Inhouse): Budgeted Items\r\nค่าใช้จ่ายการฝึกอบรมในประเทศ (หลักสูตรภายในบริษัท): อยู่ในงบประมาณที่ตั้งไว้\nNo.: 1.3 Business Activity: Training Expenses - Domestic (Public/Outside): Budgeted Items\r\nค่าใช้จ่ายการฝึกอบรมในประเทศ (หลักสูตรภายนอกบริษัท): อยู่ในงบประมาณที่ตั้งไว้\nNo.: 1.4 Business Activity: Training expenses - Overseas: Budgeted Items\r\nค่าใช้จ่ายการฝึกอบรมต่างประเทศ: อยู่ในงบประมาณที่ตั้งไว้\nNo.: 1.5 Business Activity: Reimbursement for Per Diem, Lodging and Travelling expenses (not requested for Advance)\r\nการเบิกค่าเบี้ยเลี้ยง ค่าที่พักและค่าเดินทาง (กรณีไม่ได้เบิกเงินทดรองจ่ายล่วงหน้า)\nNo.: 1.6 Business Activity: Other related staff expenses/allowances as per company policy such as shuttle bus, life/health insurance premium, uniforms, housing, annual health check, children education, marriage/funeral assistance, etc. \r\nค่าใช้จ่าย/เงินช่วยเหลืออื่นๆที่เกี่ยวกับพนักงานตามระเบียบบริษัท เช่น รถรับส่งพนักงาน ค่าเบี้ยประกันชีวิต/ประกันสุขภาพพนักงาน ค่าเช่าหอพัก ค่าเครื่องแบบพนักงาน ค่าตรวจสุขภาพประจำปี เงินช่วยเหลือการศึกษาบุตร เงินช่วยเหลือการสมรส/งานศพ ฯลฯ\nNo.: 1.7.1 Business Activity: Company-wide; New Year, Sport Day, Long Year Service, etc.\r\nระดับบริษัท: งานเลี้ยงปีใหม่ กีฬาสี Long Year Service เป็นต้น\ngroup: 1.7 Employee's Activities กิจกรรมพนักงาน\nNo.: 1.7.2 Business Activity: Division-wide; Outing, Townhall, etc.  \r\nระดับสายงาน:  Outing Townhall เป็นต้น\ngroup: 1.7 Employee's Activities กิจกรรมพนักงาน",
+      "metadata": {
+        "source": "DOA_CUSTOME_TEST.xlsx",
+        "sheet": "DOA_Data_from_IA",
+        "No.": "1",
+        "Business Activity": "1. EMPLOYEE BENEFITS ผลประโยชน์พนักงาน",
+        "group": "1. EMPLOYEE BENEFITS ผลประโยชน์พนักงาน",
+        "sub group": "-",
+        "Category": "1. EMPLOYEE BENEFITS ผลประโยชน์พนักงาน"
+      }
+    },
+    {
+      "id": 2,
+      "pageContent": "Category: 2. GENERAL ADMIN EXPENSES ค่าใช้จ่ายธุรการทั่วไป\nNo.: 2.1 Business Activity: Gasoline Expenses as per Fleet Card/Entitlement: Budgeted Items\r\nค่าน้ำมันตาม Fleet Card/สิทธิตามตำแหน่ง: อยู่ในงบประมาณที่ตั้งไว้\nNo.: 2.2 Business Activity: Utilities - Electricity & Water supply, etc. \r\nค่าสาธารณูปโภค - ค่าไฟ ค่าน้ำ เป็นต้น\nNo.: 2.3 Business Activity: License fees & All types of taxes (excluding CIT, WHT, VAT)\r\nค่าธรรมเนียมใบอนุญาต และ ค่าภาษี (ซึ่งไม่รวมถึง ภาษีเงินได้นิติบุคคล ภาษีหัก ณ ที่จ่าย และภาษีมูลค่าเพิ่ม)\nNo.: 2.4 Business Activity: (Car parking, Name card, Telephone, Postage, Fitness, Newspaper, Photocopy, etc.) (ค่าที่จอดรถ ค่าสั่งพิมพ์นามบัตร ค่าโทรศัพท์ ค่าใช้จ่ายด้านไปรษณีย์ ค่าใช้จ่ายห้องออกกำลังกาย ค่าใช้จ่ายสำหรับสื่อสิ่งพิมพ์ ค่าถ่ายเอกสาร เป็นต้น)",
+      "metadata": {
+        "source": "DOA_CUSTOME_TEST.xlsx",
+        "sheet": "DOA_Data_from_IA",
+        "No.": "2",
+        "Business Activity": "2. GENERAL ADMIN EXPENSES ค่าใช้จ่ายธุรการทั่วไป",
+        "group": "2. GENERAL ADMIN EXPENSES ค่าใช้จ่ายธุรการทั่วไป",
+        "sub group": "-",
+        "Category": "2. GENERAL ADMIN EXPENSES ค่าใช้จ่ายธุรการทั่วไป"
+      }
+    },
+    {
+      "id": 3,
+      "pageContent": "Category: 3. FINANCE & ACCOUNTING การเงินและบัญชี\nNo.: 3.1.1 Business Activity: Borrowing or making any obligation with bank or financial institution การกู้ยืมหรือก่อภาระผูกพันใดๆ กับธนาคาร หรือสถาบันการเงิน\ngroup: 3.1 Legal Action on Finance นิติกรรมเกี่ยวกับการเงิน\nNo.: 3.1.2 Business Activity: Others; opening or closing bank accounts, appointment of signatories in check, confirmation of balance with the bank, allowing the bank to debit current accounts\r\nอื่นๆ; การเปิดหรือปิดบัญชีธนาคาร การแต่งตั้งผู้ลงนามในเช็ค การลงนามยืนยันยอดเงินคงเหลือกับธนาคาร การยินยอมให้ธนาคารหักบัญชีกระแสรายวัน\ngroup: 3.1 Legal Action on Finance นิติกรรมเกี่ยวกับการเงิน\nNo.: 3.2 Business Activity: Cheque & E-banking Payment\r\nการจ่ายเช็ค และ การจ่ายผ่านช่องทางอิเล็กทรอนิกส์ (E-banking)\nNo.: 3.3 Business Activity: Advance payment and clearing - Domestic\r\nการเบิกและเคลียร์เงินทดรองจ่าย - กรณีในประเทศ\nNo.: 3.3.1 Business Activity: Domestic activity กรณีกิจกรรมในประเทศ\ngroup: 3.3 Advance payment and clearing - Domestic\r\nการเบิกและเคลียร์เงินทดรองจ่าย - กรณีในประเทศ\nNo.: 3.3.2 Business Activity: Sales & Marketing activity กิจกรรมด้านการขายและการตลาด\ngroup: 3.3 Advance payment and clearing - Domestic\r\nการเบิกและเคลียร์เงินทดรองจ่าย - กรณีในประเทศ\nNo.: 3.4 Business Activity: Advance payment and clearing - Overseas trip\r\nการเบิกและเคลียร์เงินทดรองจ่าย - กรณีเดินทางไปต่างประเทศ \nNo.: 3.5 Business Activity: Entertainment & Gift for Company Business\r\nการเลี้ยงรับรอง และการให้ของขวัญ เพื่อธุรกิจของบริษัท\nNo.: 3.5.1 Business Activity: Budgeted Items อยู่ในงบประมาณที่ตั้งไว้\ngroup: 3.5 Entertainment & Gift for Company Business\r\nการเลี้ยงรับรอง และการให้ของขวัญ เพื่อธุรกิจของบริษัท\nNo.: 3.5.2 Business Activity: Other entertainment expenses (within budget only) \r\nค่ารับรองอื่นๆ (ซึ่งอยู่ในงบประมาณที่ตั้งไว้เท่านั้น)\ngroup: 3.5 Entertainment & Gift for Company Business\r\nการเลี้ยงรับรอง และการให้ของขวัญ เพื่อธุรกิจของบริษัท\nNo.: 3.6 Business Activity:  Donation, Sponsorship, CSR Expenses (excluding Company's goods) \r\nค่าบริจาค ค่าสนับสนุน ค่าใช้จ่ายด้าน CSR (ซึ่งไม่รวมสินค้าของบริษัท)\nNo.: 3.7.1 Business Activity: FG (Re-Condition) \r\nสินค้าของบริษัทประเภท Re-Condition\ngroup: 3.7 Company's Finished Goods (FG) Donation \r\nการบริจาคสินค้าของบริษัท เพื่อการกุศล\nNo.: 3.7.2 Business Activity: Normal FG \r\nสินค้าปกติ\ngroup: 3.7 Company's Finished Goods (FG) Donation \r\nการบริจาคสินค้าของบริษัท เพื่อการกุศล\nNo.: 3.8 Business Activity: Write-off Assets to be Expenses \r\nการตัดจำหน่ายสินทรัพย์เป็นค่าใช้จ่าย\nNo.: 3.8.1 Business Activity: Write-off trade receivables \r\nการตัดจำหน่ายลูกหนี้การค้า\ngroup: 3.8 Write-off Assets to be Expenses \r\nการตัดจำหน่ายสินทรัพย์เป็นค่าใช้จ่าย\nNo.: 3.8.2 Business Activity: Write-off non-trade receivables \r\nการตัดจำหน่ายลูกหนี้ที่ไม่ใช่ลูกหนี้การค้า\ngroup: 3.8 Write-off Assets to be Expenses \r\nการตัดจำหน่ายสินทรัพย์เป็นค่าใช้จ่าย\nNo.: 3.8.3 Business Activity: Write-off unused fixed assets (Cancellation of Use) ;Obsolete, damaged, not in working condition, etc.\r\nการตัดจำหน่ายสินทรัพย์ถาวรที่ไม่ได้ใช้งาน (ยกเลิกการใช้งาน) ;ล้าสมัย ชำรุดเสียหาย หรือไม่อยู่ในสภาพที่สามารถใช้งานได้ เป็นต้น\ngroup: 3.8 Write-off Assets to be Expenses \r\nการตัดจำหน่ายสินทรัพย์เป็นค่าใช้จ่าย\nNo.: 3.8.4 Business Activity: Write-off lost fixed assets\r\nการตัดจำหน่ายสินทรัพย์ถาวรที่สูญหาย\ngroup: 3.8 Write-off Assets to be Expenses \r\nการตัดจำหน่ายสินทรัพย์เป็นค่าใช้จ่าย\nNo.: 3.9 Business Activity: Disposal of fixed assets excluding land, building, and inventory\r\nการจำหน่ายสินทรัพย์ถาวร (ไม่รวม ที่ดิน อาคาร และสินค้าคงเหลือ)\nNo.: 3.1O Business Activity: Disposal of scrap (Spare parts)\r\nการจำหน่ายเศษซากวัสดุ อุปกรณ์ (ชิ้นส่วน อะไหล่)\nNo.: 3.11 Business Activity: Non-taxable expenses; Fine and Penalty, etc.\r\nค่าใช้จ่ายต้องห้ามทางภาษี: ค่าเบี้ยปรับ เป็นต้น",
+      "metadata": {
+        "source": "DOA_CUSTOME_TEST.xlsx",
+        "sheet": "DOA_Data_from_IA",
+        "No.": "3",
+        "Business Activity": "3. FINANCE & ACCOUNTING การเงินและบัญชี",
+        "group": "3. FINANCE & ACCOUNTING การเงินและบัญชี",
+        "sub group": "-",
+        "Category": "3. FINANCE & ACCOUNTING การเงินและบัญชี"
+      }
+    },
+    {
+      "id": 4,
+      "pageContent": "Category: 4. SALES & MARKETING EXPENSES ค่าใช้จ่ายทางการขายและการตลาด\nNo.: 4.1 Business Activity: Sales price structure and all type of discounts\r\nการกำหนดโครงสร้างราคา และส่วนลดทุกประเภท\nNo.: 4.2.1 Business Activity: Overrule size of customer (to get standard discount)\r\nการเปลี่ยนขนาดของร้านค้า (เพื่อให้ส่วนลดมาตรฐาน) สำหรับร้านค้าปลีก (Retail Sales) \ngroup: 4.2  Sales Discount for Retail ส่วนลดสำหรับร้านค้าปลีก\nNo.: 4.2.2 Business Activity: Special discount rate for XL customer\r\nส่วนลดพิเศษสำหรับร้านค้าขนาด XL สำหรับร้านค้าปลีก (Retail Sales)\ngroup: 4.2  Sales Discount for Retail ส่วนลดสำหรับร้านค้าปลีก\nNo.: 4.3.1 Business Activity: Determination of special promotion\r\nการกำหนดผลตอบแทนพิเศษให้กับร้านค้าปลีก (Retail Sales)\ngroup: 4.3 Special Trade Promotion to Customer for Retail\r\nการกำหนดและจ่ายผลตอบแทนพิเศษให้กับร้านค้าปลีก\nNo.: 4.3.2 Business Activity: Payment of special promotion as per 4.3.1\r\nการจ่ายผลตอบแทนพิเศษให้กับร้านค้าปลีก (Retail sales) ตาม 4.3.1\ngroup: 4.3 Special Trade Promotion to Customer for Retail\r\nการกำหนดและจ่ายผลตอบแทนพิเศษให้กับร้านค้าปลีก\nNo.: 4.3.3 Business Activity: Payment of special promotion over 4.3.1 (%Variance of Sales Target Amount)\r\nการจ่ายผลตอบแทนพิเศษให้กับร้านค้าปลีก (Retail sales) กรณีไม่เป็นไปตามเกณฑ์ที่กำหนดตาม 4.3.1 (% ส่วนต่างของจำนวนเป้ายอดขาย)\ngroup: 4.3 Special Trade Promotion to Customer for Retail\r\nการกำหนดและจ่ายผลตอบแทนพิเศษให้กับร้านค้าปลีก\nNo.: 4.4.1 Business Activity: การกำหนดและจ่ายผลตอบแทนพิเศษสำหรับการขายโครงการของ Moderntrade สำหรับสินค้าทั้งหมด (ยกเว้นสินค้ากลุ่มเคมีภัณฑ์)\ngroup: 4.4 Special Trade Promotion to Project Sales for Moderntrade\r\nการกำหนดและจ่ายผลตอบแทนพิเศษสำหรับการขายโครงการของ Moderntrade\nNo.: 4.4.2 Business Activity: Chemical Products การกำหนดและจ่ายผลตอบแทนพิเศษสำหรับการขายโครงการของ Moderntrade สำหรับสินค้ากลุ่มเคมีภัณฑ์ก่อสร้าง\ngroup: 4.4 Special Trade Promotion to Project Sales for Moderntrade\r\nการกำหนดและจ่ายผลตอบแทนพิเศษสำหรับการขายโครงการของ Moderntrade\nNo.: 4.5.1 Business Activity: Trial account (cash on delivery only) \r\nการเปิดบัญชีลูกค้าใหม่ กรณีลูกค้าทดลอง (ชำระเป็นเงินสดเท่านั้น)\ngroup: 4.5 New Customer Account การเปิดบัญชีลูกค้าใหม่\nNo.: 4.5.2 Business Activity: Credit limit of permanent account (credit sales ≤ 30 days)\r\nการเปิดบัญชีลูกค้าใหม่ กรณีวงเงินสินเชื่อลูกค้าถาวร (เครดิตขาย ≤ 30 วัน)\ngroup: 4.5 New Customer Account การเปิดบัญชีลูกค้าใหม่\nNo.: 4.5.3 Business Activity: Credit limit of permanent account (credit sales > 30 days)\r\nการเปิดบัญชีลูกค้าใหม่ กรณีวงเงินสินเชื่อลูกค้าถาวร (เครดิตขาย > 30 วัน)\ngroup: 4.5 New Customer Account การเปิดบัญชีลูกค้าใหม่\nNo.: 4.5.4 Business Activity: New account for customer's subsidiaries (≥90% owned by Parent and under credit limit of its Parent)\r\nการเปิดบัญชีลูกค้าใหม่ กรณีเปิดบัญชีบริษัทย่อยของลูกค้า (ถือหุ้น ≥ร้อยละ 90 โดยบริษัทแม่ และใช้วงเงินสินเชื่อเดียวกับบริษัทแม่)\ngroup: 4.5 New Customer Account การเปิดบัญชีลูกค้าใหม่\nNo.: 4.6.1 Business Activity: Extend credit term up to 30 days (Additonal)\r\nการเปลี่ยนแปลงระยะเวลาชำระเงินของลูกค้า กรณีขยายระยะเวลาชำระเงิน สูงสุดไม่เกิน 30 วัน (ส่วนเพิ่ม)\ngroup: 4.6 Changing in Credit Term \r\nการเปลี่ยนแปลงระยะเวลาชำระเงินของลูกค้า\nNo.: 4.6.2 Business Activity: Extend credit term more than 30 days (up to 60 days) (additional)\r\nการเปลี่ยนแปลงระยะเวลาชำระเงินของลูกค้า กรณีขยายระยะเวลาชำระเงิน มากกว่า 30 วัน  (ไม่เกิน 60 วัน) (ส่วนเพิ่ม) \ngroup: 4.6 Changing in Credit Term \r\nการเปลี่ยนแปลงระยะเวลาชำระเงินของลูกค้า\nNo.: 4.6.3 Business Activity: Shorten credit term \r\nการเปลี่ยนแปลงระยะเวลาชำระเงินของลูกค้า กรณีลดระยะเวลาชำระเงิน\ngroup: 4.6 Changing in Credit Term \r\nการเปลี่ยนแปลงระยะเวลาชำระเงินของลูกค้า\nNo.: 4.7 Business Activity: Change of credit limit (only for customer opening account ≥ 24 months) การเปลี่ยนแปลงวงเงินลูกค้า (เฉพาะลูกค้าที่เปิดบัญชี ≥ 24 เดือน)\nNo.: 4.8 Business Activity: Temporary block customer account / stop selling or delivery to overdue debtors \r\nการปิดบัญชีลูกค้าชั่วคราว/งดขายหรือส่งสินค้าให้ลูกค้าที่เกินกำหนดชำระ\nNo.: 4.9.1.1 Business Activity: 4.9.1 Total debts (without bounced cheque) \r\nการอนุมัติใบสั่งขายสินค้าที่เกินวงเงินสินเชื่อ กรณียอดหนี้ทั้งหมด (ไม่มีเช็คคืน) สำหรับช่องทางขายร้านค้าปลีก (Retail Sales)\ngroup: 4.9. Approval of Sales Order over Approved Credit Limit\r\nการอนุมัติใบสั่งขายสินค้าที่เกินวงเงินสินเชื่อ\nNo.: 4.9.1.2 Business Activity: 4.9.1 Total debts (without bounced cheque) \r\nการอนุมัติใบสั่งขายสินค้าที่เกินวงเงินสินเชื่อ กรณียอดหนี้ทั้งหมด (ไม่มีเช็คคืน) สำหรับช่องทางขายห้าง Modern Trade\ngroup: 4.9. Approval of Sales Order over Approved Credit Limit\r\nการอนุมัติใบสั่งขายสินค้าที่เกินวงเงินสินเชื่อ\nNo.: 4.9.1.3 Business Activity: 4.9.1 Total debts (without bounced cheque) \r\nการอนุมัติใบสั่งขายสินค้าที่เกินวงเงินสินเชื่อ กรณียอดหนี้ทั้งหมด (ไม่มีเช็คคืน) สำหรับช่องทางขายโครงการ (Project Sales)\ngroup: 4.9. Approval of Sales Order over Approved Credit Limit\r\nการอนุมัติใบสั่งขายสินค้าที่เกินวงเงินสินเชื่อ\nNo.: 4.9.2 Business Activity: Overdue debts (with bounced cheque) \r\nการอนุมัติใบสั่งขายสินค้าที่เกินวงเงินสินเชื่อ กรณีหนี้ที่เกินกำหนดชำระ (มีเช็คคืน)\ngroup: 4.9. Approval of Sales Order over Approved Credit Limit\r\nการอนุมัติใบสั่งขายสินค้าที่เกินวงเงินสินเชื่อ\nNo.: 4.10 Business Activity: Approval for Debt Settlement Negotiation การอนุมัติการเจรจาผ่อนชำระหนี้\t\nNo.: 4.11 Business Activity: Sales to Customer with Bounced Cheque \r\nการอนุมัติขายให้แก่ลูกหนี้มีเช็คคืน\nNo.: 4.12 Business Activity: Ship-to\" transaction that the address/location is different from \"Sold-to\" รายการ \"Ship-to\" ซึ่งที่อยู่หรือสถานที่ไม่ตรงกับ \"Sold-to\"\t\nNo.: 4.13 Business Activity: Exchange cheque and extend cheque clearing to no more than 30 days\r\nการแลกเปลี่ยนเช็ค และการขยายเวลาการสั่งจ่ายออกไปไม่เกิน 30 วัน\nNo.: 4.14.1 Business Activity: Per conditions set forth by Company policy\r\nการรับคืนหรือเปลี่ยนสินค้า ตามเงื่อนไขและนโยบายที่บริษัทกำหนด\ngroup: 4.14 Product Return or Replacement\r\nการรับคืนหรือเปลี่ยนสินค้า\nNo.: 4.14.2 Business Activity: Out-of-business, fire accidents, or other disasters\r\nการรับคืนหรือเปลี่ยนสินค้า กรณีเลิกกิจการ อัคคีภัย หรือภัยพิบัติอื่นๆ\ngroup: 4.14 Product Return or Replacement\r\nการรับคืนหรือเปลี่ยนสินค้า\nNo.: 4.15 Business Activity: FG Compensation of Damages to Customer\r\nการชดเชยค่าเสียหายของสินค้าให้กับลูกค้า\nNo.: 4.16 Business Activity: Prosecution in the court การอนุมัติฟ้องร้องดำเนินคดี\nNo.: 4.17 Business Activity: The Company is being sued and asked for damage claim\r\nกรณีบริษัทถูกฟ้องร้องดำเนินคดี และถูกเรียกร้องค่าเสียหาย\nNo.: 4.18 Business Activity: Annual Advertisement and Specific Budget: Budgeted Items (approved by BoD/Excom)\r\nงบประมาณโฆษณาประชาสัมพันธ์ประจำปี และงบประมาณเฉพาะกิจ: อยู่ในงบประมาณที่ตั้งไว้ (อนุมัติโดย BoD/Excom)\nNo.: 4.19.1 Business Activity: Retail การอนุมัติจ่ายสินค้าสำเร็จรูป เพื่อใช้เป็นตัวอย่างให้ลูกค้า สำหรับร้านค้าปลีก (Retail Sales)\ngroup: 4.19  Sample goods to customer \r\nการอนุมัติจ่ายสินค้าสำเร็จรูป เพื่อใช้เป็นตัวอย่างให้ลูกค้า\nNo.: 4.19.2 Business Activity: Modern Trade การอนุมัติจ่ายสินค้าสำเร็จรูป เพื่อใช้เป็นตัวอย่างให้ลูกค้า สำหรับห้าง Modern Trade\ngroup: 4.19  Sample goods to customer \r\nการอนุมัติจ่ายสินค้าสำเร็จรูป เพื่อใช้เป็นตัวอย่างให้ลูกค้า\nNo.: 4.19.3 Business Activity: Project การอนุมัติจ่ายสินค้าสำเร็จรูป เพื่อใช้เป็นตัวอย่างให้ลูกค้า สำหรับช่องทางขายโครงการ (Project Sales)\ngroup: 4.19  Sample goods to customer \r\nการอนุมัติจ่ายสินค้าสำเร็จรูป เพื่อใช้เป็นตัวอย่างให้ลูกค้า\nNo.: 4.19.4 Business Activity: Marketing Dept. การอนุมัติจ่ายสินค้าสำเร็จรูป เพื่อใช้เป็นตัวอย่างให้ลูกค้า สำหรับฝ่ายการตลาด\ngroup: 4.19  Sample goods to customer \r\nการอนุมัติจ่ายสินค้าสำเร็จรูป เพื่อใช้เป็นตัวอย่างให้ลูกค้า\nNo.: 4.20.1 Business Activity: Budgeted Items or as per specified criterias\r\nการอนุมัติจ่ายค่านายหน้าให้กับพนักงานขาย กรณีที่อยู่ในงบประมาณที่ตั้งไว้หรือเป็นไปตามหลักเกณฑ์ที่กำหนด\ngroup: 4.20 Commission Payment to Salesperson \r\nการอนุมัติจ่ายค่านายหน้าให้กับพนักงานขาย\nNo.: 4.20.2 Business Activity: Non-budget Items or not as per specified criterias (Baht per person) \r\nการอนุมัติจ่ายค่านายหน้าให้กับพนักงานขาย กรณีนอกเหนือจากงบประมาณที่ตั้งไว้หรือไม่เป็นไปตามหลักเกณฑ์ที่กำหนด (บาทต่อคน) และจำนวนที่อนุมัติจะต้องรวมกับค่านายหน้าเดิมที่ได้รับ (รวมทุก Mechanic)\ngroup: 4.20 Commission Payment to Salesperson \r\nการอนุมัติจ่ายค่านายหน้าให้กับพนักงานขาย",
+      "metadata": {
+        "source": "DOA_CUSTOME_TEST.xlsx",
+        "sheet": "DOA_Data_from_IA",
+        "No.": "4",
+        "Business Activity": "4. SALES & MARKETING EXPENSES ค่าใช้จ่ายทางการขายและการตลาด",
+        "group": "4. SALES & MARKETING EXPENSES ค่าใช้จ่ายทางการขายและการตลาด",
+        "sub group": "-",
+        "Category": "4. SALES & MARKETING EXPENSES ค่าใช้จ่ายทางการขายและการตลาด"
+      }
+    },
+    {
+      "id": 5,
+      "pageContent": "Category: 5. CAPEX INVESTMENT (Purchase/Rent/Lease) การลงทุนโครงการต่างๆ (ซื้อ/เช่า/เช่าซื้อ)\nNo.: 5.1 Business Activity: Land and Buildings\r\nที่ดิน และ อาคาร \nNo.: 5.2.1 Business Activity: Budgeted Items\r\nอยู่ในงบประมาณที่ตั้งไว้\ngroup: 5.2 Investment in machinery, equipment, furnitures, building improvement, renovation, and other assets\r\nการลงทุนในเครื่องจักร อุปกรณ์ เฟอร์นิเจอร์ ส่วนปรับปรุงอาคาร การซ่อมแซม และสินทรัพย์ถาวรอื่นๆ\nNo.: 5.2.2 Business Activity: Non-budget Items\r\nนอกเหนือจากงบประมาณที่ตั้งไว้\ngroup: 5.2 Investment in machinery, equipment, furnitures, building improvement, renovation, and other assets\r\nการลงทุนในเครื่องจักร อุปกรณ์ เฟอร์นิเจอร์ ส่วนปรับปรุงอาคาร การซ่อมแซม และสินทรัพย์ถาวรอื่นๆ\nNo.: 5.3 Business Activity: Non-budget OPEX\r\nนอกเหนือจากงบประมาณรายจ่ายที่ตั้งไว้",
+      "metadata": {
+        "source": "DOA_CUSTOME_TEST.xlsx",
+        "sheet": "DOA_Data_from_IA",
+        "No.": "5",
+        "Business Activity": "5. CAPEX INVESTMENT (Purchase/Rent/Lease) การลงทุนโครงการต่างๆ (ซื้อ/เช่า/เช่าซื้อ)",
+        "group": "5. CAPEX INVESTMENT (Purchase/Rent/Lease) การลงทุนโครงการต่างๆ (ซื้อ/เช่า/เช่าซื้อ)",
+        "sub group": "-",
+        "Category": "5. CAPEX INVESTMENT (Purchase/Rent/Lease) การลงทุนโครงการต่างๆ (ซื้อ/เช่า/เช่าซื้อ)"
+      }
+    },
+    {
+      "id": 6,
+      "pageContent": "Category: 6. PROCUREMENT การจัดซื้อจัดจ้าง\nNo.: 6.1 Business Activity: Raw material and packaging for mass production\r\nการจัดซื้อวัตถุดิบและบรรจุภัณฑ์สำหรับการผลิตที่เป็น Mass Production\nNo.: 6.2 Business Activity: Raw material and packaging for testing or R&D\r\nการจัดซื้อวัตถุดิบและบรรจุภัณฑ์ กรณีเพื่อ testing หรือ R&D\nNo.: 6.3.1 Business Activity: Trading goods incl. Autotint\r\nการซื้อสินค้าที่ซื้อมาเพื่อจำหน่ายต่อ รวมถึงเครื่องผสมสี\ngroup: 6.3 Trading Goods  การซื้อสินค้าจากบริษัทอื่นเพื่อมาจำหน่ายต่อ\nNo.: 6.3.2 Business Activity: Trading goods (Related Company)\r\nการซื้อสินค้าที่ซื้อมาเพื่อจำหน่ายต่อ (จากบริษัทที่เกี่ยวข้องกัน)\ngroup: 6.3 Trading Goods  การซื้อสินค้าจากบริษัทอื่นเพื่อมาจำหน่ายต่อ\nNo.: 6.4 Business Activity: Stocks i.e. spare part, PPE, Diesel, etc.\r\nการซื้อสินค้าที่ซื้อมาเก็บใน Stock เพื่อรอการเบิกใช้ เช่น อะไหล่, อุปกรณ์ป้องกันต่างๆ (PPE), น้ำมันดีเซล เป็นต้น\nNo.: 6.5 Business Activity: General supply&service; supply for production and R&D, shipment costs, etc.\r\nการซื้อสินค้าและบริการทั่วไป ได้แก่ การผลิต R&D และค่าขนส่ง เป็นต้น\nNo.: 6.6.1 Business Activity: HR Admin (Center) การซื้อเครื่องเขียนและอุปกรณ์สำนักงาน โดยฝ่ายธุรการกลาง (หน่วยงานกลาง)\ngroup: 6.6 Stationery and Office Supplies  การซื้อเครื่องเขียนและอุปกรณ์สำนักงาน\nNo.: 6.6.2 Business Activity: Other Departments  การซื้อเครื่องเขียนและอุปกรณ์สำนักงาน โดยฝ่ายอื่นๆ\ngroup: 6.6 Stationery and Office Supplies  การซื้อเครื่องเขียนและอุปกรณ์สำนักงาน\nNo.: 6.7 Business Activity: Insurance premium expenses  การทำประกันภัย (ค่าเบี้ยประกัน)\nNo.: 6.8 Business Activity: Professional and Consultant fees for IT, Legal, R&D, Marketing, HR, etc.\r\nการว่าจ้างที่ปรึกษา (ค่าวิชาชีพและค่าที่ปรึกษา สำหรับ IT กฎหมาย R&D การตลาด HR เป็นต้น)\nNo.: 6.9 Business Activity: Goods delivery ค่าจัดส่งสินค้า\nNo.: 6.10 Business Activity: Goods & services for all types of advertising and promotion\r\nการซื้อสินค้าและบริการสำหรับการโฆษณาและกิจกรรมส่งเสริมการขายทุกประเภท\nNo.: 6.11 Business Activity: Repair and maintenance machinery, vehicle, and general\r\nการซื้อสินค้าและอุปกรณ์เพื่อนำมาใช้ในการซ่อมแซมเครื่องจักร ยานพาหนะ หรือการซ่อมแซมทั่วไป\nNo.: 6.12 Business Activity: Rental and Service expenses as per signed contract ; land, building, warehouse, company car, IT, etc.\r\nค่าเช่าและค่าบริการตามสัญญาได้แก่ ที่ดิน อาคาร คลังสินค้า รถยนต์บริษัท IT เป็นต้น\nNo.: 6.13 Business Activity: Payment as per signed contract without total amount of outsource/subcontract wages \r\nการจ่ายเงินค่าแรงตามสัญญาที่ไม่ได้ระบุจำนวนเงินรวมทั้งหมด สำหรับกรณี outsource หรือ subcontract\nNo.: 6.14 Business Activity: Vendor cancellation charge ค่าใช้จ่ายที่เกิดขึ้นจากการยกเลิกการสั่งซื้อ\nNo.: 6.15.1 Business Activity: Raw Materials, Packaging, and Trading Goods\r\nการอนุมัติใบสั่งซื้อที่มีใบขอซื้อที่อนุมัติแล้ว สำหรับวัตถุดิบ บรรจุภัณฑ์ และสินค้าที่ซื้อมาเพื่อจำหน่ายต่อ\ngroup: 6.15 Purchase Order (PO) approval with approved PR\r\nการอนุมัติใบสั่งซื้อที่มีใบขอซื้อที่อนุมัติแล้ว\nNo.: 6.15.2 Business Activity: General Purchase การอนุมัติใบสั่งซื้อที่มีใบขอซื้อที่อนุมัติแล้ว สำหรับการจัดซื้อทั่วไป\ngroup: 6.15 Purchase Order (PO) approval with approved PR\r\nการอนุมัติใบสั่งซื้อที่มีใบขอซื้อที่อนุมัติแล้ว\nNo.: 6.15.3 Business Activity: Insurance premium expenses การอนุมัติใบสั่งซื้อที่มีใบขอซื้อที่อนุมัติแล้ว สำหรับค่าเบี้ยประกัน\ngroup: 6.15 Purchase Order (PO) approval with approved PR\r\nการอนุมัติใบสั่งซื้อที่มีใบขอซื้อที่อนุมัติแล้ว\nNo.: 6.15.4 Business Activity: Professional and Consultant fees for IT, Legal, R&D, Marketing, HR, etc.\r\nการอนุมัติใบสั่งซื้อที่มีใบขอซื้อที่อนุมัติแล้ว สำหรับค่าวิชาชีพและค่าที่ปรึกษา สำหรับ IT กฎหมาย R&D การตลาด HR และอื่นๆ\ngroup: 6.15 Purchase Order (PO) approval with approved PR\r\nการอนุมัติใบสั่งซื้อที่มีใบขอซื้อที่อนุมัติแล้ว\nNo.: 6.15.5 Business Activity: Renovation and IT Projects การอนุมัติใบสั่งซื้อที่มีใบขอซื้อที่อนุมัติแล้ว สำหรับโครงการปรับปรุงซ่อมแซม และโครงการด้าน IT\ngroup: 6.15 Purchase Order (PO) approval with approved PR\r\nการอนุมัติใบสั่งซื้อที่มีใบขอซื้อที่อนุมัติแล้ว",
+      "metadata": {
+        "source": "DOA_CUSTOME_TEST.xlsx",
+        "sheet": "DOA_Data_from_IA",
+        "No.": "6",
+        "Business Activity": "6. PROCUREMENT การจัดซื้อจัดจ้าง",
+        "group": "6. PROCUREMENT การจัดซื้อจัดจ้าง",
+        "sub group": "-",
+        "Category": "6. PROCUREMENT การจัดซื้อจัดจ้าง"
+      }
+    },
+    {
+      "id": 7,
+      "pageContent": "Category: 7.SUPPLY & FG REQUISITION (LOGISTICS)\r\nการเบิกจ่ายพัสดุและสินค้าสำเร็จรูป (Logistics)\nNo.: 7.1.1 Business Activity: Value of stock provision การตั้งค่าเผื่อ\ngroup: 7.1 Stocks (RM/PK/FG) Value Adjustment การอนุมัติปรับยอดคงเหลือสินค้า (วัตถุดิบ/บรรจุภัณฑ์/สินค้าสำเร็จรูป)\nNo.: 7.1.2 Business Activity: Annual physical count of stocks การตรวจนับประจำปี\ngroup: 7.1 Stocks (RM/PK/FG) Value Adjustment การอนุมัติปรับยอดคงเหลือสินค้า (วัตถุดิบ/บรรจุภัณฑ์/สินค้าสำเร็จรูป)\nNo.: 7.2 Business Activity: Supply & FG written off, disposal, destruction & scrap sales\r\nการตัดจำหน่าย ขาย ทำลาย และขายซากพัสดุและสินค้าสำเร็จรูป\nNo.: 7.3 Business Activity: Packaging issued to display for customer\r\nการอนุมัติจ่ายบรรจุภัณฑ์ เพื่อนำไปใช้ในการ display ให้ลูกค้า",
+      "metadata": {
+        "source": "DOA_CUSTOME_TEST.xlsx",
+        "sheet": "DOA_Data_from_IA",
+        "No.": "7",
+        "Business Activity": "7.SUPPLY & FG REQUISITION (LOGISTICS)\r\nการเบิกจ่ายพัสดุและสินค้าสำเร็จรูป (Logistics)",
+        "group": "7.SUPPLY & FG REQUISITION (LOGISTICS)\r\nการเบิกจ่ายพัสดุและสินค้าสำเร็จรูป (Logistics)",
+        "sub group": "-",
+        "Category": "7.SUPPLY & FG REQUISITION (LOGISTICS)\r\nการเบิกจ่ายพัสดุและสินค้าสำเร็จรูป (Logistics)"
+      }
+    },
+    {
+      "id": 8,
+      "pageContent": "Category: 8. IMPORT & EXPORT (SHIPPING) การนำเข้าและส่งออกสินค้า (Shipping)\nNo.: 8.1 Business Activity: Approval of L/C opening for importing FG from overseas\r\nการอนุมัติการเปิด L/C เพื่อสั่งสินค้าเข้าจากต่างประเทศ\nNo.: 8.2 Business Activity: Advance payment for import and export taxes\r\nการอนุมัติเงินทดรองจ่ายค่าภาษีอากรนำเข้าและส่งออกสินค้า\nNo.: 8.3 Business Activity: Custom clearance fee การอนุมัติจ่ายค่าใช้จ่ายในการออกของ\nNo.: 8.4 Business Activity: Refund custom tax การขอชดเชยสิทธิประโยชน์ทางภาษี\nNo.: 8.5 Business Activity: Fees charged from other shipping company\r\nการอนุมัติค่าบริการที่เรียกเก็บจากบริษัทอื่นที่ให้บริการ Shipping",
+      "metadata": {
+        "source": "DOA_CUSTOME_TEST.xlsx",
+        "sheet": "DOA_Data_from_IA",
+        "No.": "8",
+        "Business Activity": "8. IMPORT & EXPORT (SHIPPING) การนำเข้าและส่งออกสินค้า (Shipping)",
+        "group": "8. IMPORT & EXPORT (SHIPPING) การนำเข้าและส่งออกสินค้า (Shipping)",
+        "sub group": "-",
+        "Category": "8. IMPORT & EXPORT (SHIPPING) การนำเข้าและส่งออกสินค้า (Shipping)"
+      }
+    },
+    {
+      "id": 9,
+      "pageContent": "Category: 9. LOAN TO OR BETWEEN SUBSIDIARY COMPANY การให้เงินกู้ยืมแก่หรือระหว่างบริษัทย่อย\nNo.: 9.1 Business Activity: Loan to or between subsidiaries (TOAP's shares > 50%)\r\nการให้เงินกู้ยืมแก่หรือระหว่างบริษัทย่อยที่บริษัทถือหุ้น >50%\nNo.: 9.2 Business Activity: Loan to subsidiaries/associates (TOAP's shares ≤ 50%)\r\nการให้เงินกู้ยืมแก่บริษัทย่อย/บริษัทร่วมที่บริษัทถือหุ้น ≤ 50%",
+      "metadata": {
+        "source": "DOA_CUSTOME_TEST.xlsx",
+        "sheet": "DOA_Data_from_IA",
+        "No.": "9",
+        "Business Activity": "9. LOAN TO OR BETWEEN SUBSIDIARY COMPANY การให้เงินกู้ยืมแก่หรือระหว่างบริษัทย่อย",
+        "group": "9. LOAN TO OR BETWEEN SUBSIDIARY COMPANY การให้เงินกู้ยืมแก่หรือระหว่างบริษัทย่อย",
+        "sub group": "-",
+        "Category": "9. LOAN TO OR BETWEEN SUBSIDIARY COMPANY การให้เงินกู้ยืมแก่หรือระหว่างบริษัทย่อย"
+      }
+    },
+    {
+      "id": 10,
+      "pageContent": "Category: 10. CORPORATE DOCUMENTS COMMUNICATED TO OUTSIDERS\r\nการเผยแพร่เอกสารของบริษัทให้กับบุคคลภายนอก\nNo.: 10.1 Business Activity: Documents to Government Agent เอกสารส่งให้หน่วยงานราชการ\nNo.: 10.2 Business Activity: Finance and Accounting Related เอกสารที่เกี่ยวข้องกับการเงินและบัญชี\nNo.: 10.3 Business Activity: Non-Finance and Accounting Related เอกสารที่ไม่เกี่ยวข้องกับการเงินและบัญชี\nNo.: 10.4 Business Activity: Company's Confidential Information ข้อมูลความลับของบริษัท",
+      "metadata": {
+        "source": "DOA_CUSTOME_TEST.xlsx",
+        "sheet": "DOA_Data_from_IA",
+        "No.": "10",
+        "Business Activity": "10. CORPORATE DOCUMENTS COMMUNICATED TO OUTSIDERS\r\nการเผยแพร่เอกสารของบริษัทให้กับบุคคลภายนอก",
+        "group": "10. CORPORATE DOCUMENTS COMMUNICATED TO OUTSIDERS\r\nการเผยแพร่เอกสารของบริษัทให้กับบุคคลภายนอก",
+        "sub group": "-",
+        "Category": "10. CORPORATE DOCUMENTS COMMUNICATED TO OUTSIDERS\r\nการเผยแพร่เอกสารของบริษัทให้กับบุคคลภายนอก"
+      }
+    }
+  ]
+}

@@ -5,7 +5,7 @@ import { InMemoryStore } from "@langchain/core/stores";
 import { createClient } from "./supabase/server";
 import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
 
-export async function getDOARetriever() {
+export async function getDOA_Main_Retriever() {
     const supabase = await createClient();
 
     const underlyingEmbeddings = new OpenAIEmbeddings({
@@ -23,8 +23,8 @@ export async function getDOARetriever() {
 
     const vectorStore = new SupabaseVectorStore(cacheBackedEmbeddings, {
         client: supabase,
-        tableName: 'documents_doa',
-        queryName: 'match_documents_doa',
+        tableName: 'main',
+        queryName: 'match_main',
     });
 
     const retriever = vectorStore.asRetriever({ k: 4 });

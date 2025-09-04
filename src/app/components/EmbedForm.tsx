@@ -26,20 +26,27 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
       id: 'chat5',
       name: 'ข้อมูลบุคลากร',
       description: 'ข้อมูลพนักงาน ตำแหน่ง และแผนกต่างๆ',
-      icon: '📋'
+      icon: ''
     },
     {
       id: 'chat8',
       name: 'การออกกำลังกาย',
       description: 'ข้อมูลเกี่ยวกับการออกกำลังกาย และโภชนาการ',
-      icon: '👥'
+      icon: ''
     },
     {
       id: 'DOA-chat',
       name: 'DOA',
       description: 'ข้อมูลเกี่ยวกับApproval',
-      icon: '📑'
+      icon: ''
     },
+    {
+      id: 'doachatwithsession',
+      name: 'doachatwithsession',
+      description: 'ข้อมูลเกี่ยวกับApproval',
+      icon: ''
+    },
+    
   ]
 
   const handleChange = (key: keyof EmbedSettings, value: string) => {
@@ -325,7 +332,7 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
         </div>
 
         {/* Save Button */}
-        <button
+        {/* <button
           onClick={handleSaveSettings}
           className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 ${saved
               ? 'bg-green-500 text-white'
@@ -333,7 +340,7 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
             }`}
         >
           {saved ? '✅ บันทึกเรียบร้อย' : '💾 บันทึกการตั้งค่า'}
-        </button>
+        </button> */}
       </div>
     </div>
   )

@@ -24,7 +24,7 @@ export default function EmbedPage() {
     textColor: '#000000',
     buttonColor: '#007bff',
     borderRadius: '8',
-    dataSource: 'chat5'
+    dataSource: 'DOA-chat'  // ค่าเริ่มต้นเป็น 'DOA-chat'
   })
   const [copied, setCopied] = useState(false)
 
@@ -212,7 +212,7 @@ export default function EmbedPage() {
             </div>
 
             {/* Features Section */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                 <span className="text-xl mr-2">✨</span>
                 คุณสมบัติเด่น
@@ -248,7 +248,7 @@ export default function EmbedPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

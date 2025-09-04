@@ -9,8 +9,6 @@ import { PostgresChatMessageHistory } from "@langchain/community/stores/message/
 import pg from "pg";
 import { createClient } from "@/lib/supabase/server";
 import { getDOARetriever } from "@/lib/doa_retriever";
-import { getDOA_Main_Retriever } from "@/lib/doa_main_retriever";
-
 
 // สร้าง ChatOpenAI แบบธรรมดา (ไม่มี tools)
 function getModel() {
@@ -43,12 +41,73 @@ export async function POST(req: NextRequest) {
     const { data } = await supabase.auth.getUser();
     const userId = data.user?.id;
 
-    const sessionId = userId || 'widget_anonymous';
-
-    console.log('🔑 Using sessionId:', sessionId);
-
     const body = await req.json();
     const messages: any[] = body.messages ?? [];
+    
+    let sessionId: string = 'widget_anonymous';
+    let isNewSession = false;
+
+    if (userId) {
+        // ถ้ามี userId ใช้เป็น sessionId (ไม่หมดอายุ)
+        sessionId = userId;
+        console.log('👤 Using userId as sessionId:', userId);
+    } else {
+        // ถ้าไม่มี userId (anonymous) จัดการ widget session ที่หมดอายุ
+        const currentSessionId = body.sessionId;
+        
+        if (currentSessionId && currentSessionId !== 'widget_anonymous') {
+            // ตรวจสอบว่า sessionId เป็นรูปแบบที่เราสร้าง และยังไม่หมดอายุ
+            try {
+                const parts = currentSessionId.split('_');
+                if (parts.length >= 3 && parts[0] === 'widget') {
+                    const timestampStr = parts[1];
+                    const timestamp = parseInt(timestampStr, 36);
+                    const now = Date.now();
+                    const oneDay = 24 * 60 * 60 * 1000; // 1 วัน
+                    
+                    if (now - timestamp < oneDay) {
+                        console.log('🔄 Using existing valid sessionId:', currentSessionId);
+                        sessionId = currentSessionId;
+                    } else {
+                        console.log('⏰ SessionId expired, creating new one');
+                        isNewSession = true;
+                    }
+                } else {
+                    console.log('❌ Invalid sessionId format, creating new one');
+                    isNewSession = true;
+                }
+            } catch (error) {
+                console.log('❌ Error parsing sessionId, creating new one:', error);
+                isNewSession = true;
+            }
+        } else {
+            console.log('🆕 No sessionId provided, creating new one');
+            isNewSession = true;
+        }
+
+        // สร้าง sessionId ใหม่สำหรับ anonymous widget
+        if (isNewSession) {
+            let newSessionId;
+            let attempts = 0;
+            const maxAttempts = 10;
+            
+            do {
+                const timestamp = Date.now().toString(36);
+                const random = Math.random().toString(36).substring(2, 15);
+                newSessionId = `widget_${timestamp}_${random}`;
+                attempts++;
+                
+                if (newSessionId !== currentSessionId) {
+                    break;
+                }
+            } while (attempts < maxAttempts);
+            
+            sessionId = newSessionId;
+            console.log('✨ Created new anonymous sessionId:', sessionId);
+        }
+    }
+
+    console.log('🔑 Final sessionId:', sessionId);
 
     // ถ้าเพิ่งเริ่ม (ไม่มีข้อความเลย) → ส่ง greeting กลับทันที
     if (messages.length === 0) {
@@ -70,12 +129,14 @@ export async function POST(req: NextRequest) {
     รายละเอียดเพิ่มเติม: https://doa.toagroup.com/doa`,
             type: "text",
             timestamp: new Date().toISOString(),
+            sessionId: sessionId,
+            isNewSession: isNewSession
         });
     }
 
     const lastUserMessage = messages[messages.length - 1].content ?? "";
 
-    // RAG: Retrieve context detail
+    // RAG: Retrieve context
     console.log('Search Query:', lastUserMessage);
     const docs = (await getDOARetriever()).invoke(lastUserMessage);
 
@@ -92,40 +153,35 @@ export async function POST(req: NextRequest) {
     console.log('📝 Final context length:', safeContext.length);
     console.log('📝 Context preview:', safeContext.substring(0, 200) + '...');
 
-
-    
-    // RAG: Retrieve context detail
-    console.log('Search Query Main:', lastUserMessage);
-    const mainDocs = (await getDOA_Main_Retriever()).invoke(lastUserMessage);
-
-    console.log("Retrieved documents:", await mainDocs);
-    (await mainDocs).forEach((doc, index) => {
-        console.log(`${index + 1}. Document preview:`, doc.pageContent.substring(0, 100) + '...');
-        console.log(`   Metadata:`, doc.metadata);
-    });
-    const ragMainContextRaw = (await mainDocs).map((document) => document.pageContent).join("\n\n");
-
-    // ป้องกัน { } ใน context
-    const safeMainContext = ragMainContextRaw.replace(/[{}]/g, '');
-
-    console.log('📝 Final context length:', safeMainContext.length);
-    console.log('📝 Context preview:', safeMainContext.substring(0, 200) + '...');
-
-    const SYSTEM_PROMPT =`
-    คุณคือ AI Chatbot ที่มีข้อมูล 2 ชุด:
-    - ชุดที่ 1 = หัวข้อหลัก/ภาพรวม : ${safeMainContext}
-    - ชุดที่ 2 = รายละเอียดของหัวข้อ : ${safeContext}
-
-    **กติกาการตอบ:**
-    1. ถ้าผู้ใช้ถามเชิงภาพรวม เช่น "ผลประโยชน์มีอะไรบ้าง" → ให้ตอบโดยอ้างอิงเฉพาะข้อมูลจากชุดที่ 1
-    2. ถ้าผู้ใช้ถามเจาะจงหัวข้อ เช่น "เบี้ยเลี้ยง", "โบนัส", หรือ "รายละเอียดข้อ 1.2" → ให้ตอบโดยใช้ข้อมูลจากชุดที่ 2
-    3. ถ้าหัวข้อที่ถูกถามไม่มีรายละเอียดในชุดที่ 2 → ให้ตอบว่า "ไม่มีรายละเอียดเพิ่มเติม"
-    4. ทุกคำตอบต้องแสดงในรูปแบบที่เป็นระเบียบ อ่านง่าย และคงโครงสร้างลำดับขั้น (hierarchy) ให้ชัดเจน`;
-
     const prompt = ChatPromptTemplate.fromMessages([
-        ['system', SYSTEM_PROMPT],
-        new MessagesPlaceholder("history"),
-        ["user", "{input}"],
+      [
+        "system",
+        `คุณคือผู้ช่วยตอบคำถาม โดยต้องใช้ข้อมูลที่อยู่ใน <docs> เท่านั้น
+        <docs>
+        ${safeContext}
+        </docs>
+
+        ข้อกำหนดการตอบ:
+
+        - ถ้าพบคำตอบใน <docs> ให้ตอบตามข้อมูลนั้นโดยตรง ห้ามแต่งเติมหรือคาดเดา
+
+        - ถ้าคำถามของผู้ใช้ตรงกับ หรือมีความหมายพ้องกับหัวข้อ/เนื้อหาใน <docs> ให้ตอบตามข้อมูลนั้นโดยตรง ห้ามแต่งเติมหรือคาดเดา
+
+        - ถ้าคำถามกว้าง และใน <docs> มีหลายข้อย่อย ⇒ ถามกลับ โดยยกหัวข้อย่อยให้เลือก การเรียงลำดับตามใน <docs> ห้ามแต่งเติมหรือคาดเดา
+
+        - ถ้าไม่พบคำตอบใน <docs> ให้ตอบว่า "กรุณาถามคำถามจากหัวข้อที่กำหนด" 
+
+        - ห้ามดัดแปลงข้อความดั้งเดิมใน <docs>
+
+        - การตอบคำถามควรเอามาทั้งหมด ตามข้อมูลนั้นโดยตรง ห้ามตัดทอน หรือสรุปความ
+
+        - ถ้ามีฟิลด์ 'Form URL' ให้แสดงเป็น URL ดิบรูปแบบ https://... โดยไม่ล้อมด้วย < > และไม่ทำเป็นลิงก์ markdown
+
+        `,
+      ],
+
+      new MessagesPlaceholder("history"),
+      ["user", "{input}"],
     ]);
 
 
@@ -147,7 +203,9 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
             content: response.content,
             type: "text",
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            sessionId: sessionId,
+            isNewSession: isNewSession
         });
     } catch (error) {
         console.error('LLM Error:', error);
@@ -155,7 +213,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({
             content: "เกิดข้อผิดพลาดในการประมวลผล กรุณาลองใหม่อีกครั้ง",
             type: "error",
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            sessionId: sessionId
         }, { status: 500 });
     }
 }

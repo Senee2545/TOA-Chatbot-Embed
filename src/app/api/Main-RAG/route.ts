@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// http://localhost:3000/api/DOA-RAG
+// http://localhost:3000/api/Main-RAG
 
 import fs from "fs";
 import path from "path";
@@ -88,6 +88,7 @@ export async function GET() {
         // แปลงข้อมูลเป็น Document objects โดยใช้ column names ที่ได้จริง
         // แยกฟังก์ชันช่วยหาค่าโดยไม่แคร์ case และ space
         // ฟังก์ชันช่วย (วางไว้ก่อน .map())
+                // ฟังก์ชันช่วย (วางไว้ก่อน .map())
         function getValueInsensitive(row: any, keyVariants: string[]): string {
             for (const key of Object.keys(row)) {
                 for (const variant of keyVariants) {
@@ -103,76 +104,75 @@ export async function GET() {
             return value.trim() !== "" && value.trim() !== "-";
         }
 
-        // เริ่ม .map()
-        const docs: Document<Record<string, any>>[] = sheetData
-            .map((row: any, index: number) => {
-                try {
-                    const no = getValueInsensitive(row, ["No.", "No"]);
-                    const category = getValueInsensitive(row, ["category"]);
-                    const group = getValueInsensitive(row, ["group"]);
-                    const subGroup = getValueInsensitive(row, ["sub group"]);
-                    const description = getValueInsensitive(row, ["Description"]);
-                    
+        // Step 1: จัดกลุ่มข้อมูลตาม Category
+        const groupedByCategory: Record<string, any[]> = {};
 
-                    let businessActivity = "";
-                    let groupLine = "";
+        sheetData.forEach((row: any, index: number) => {
+            try {
+                const no = getValueInsensitive(row, ["No.", "No"]);
+                const category = getValueInsensitive(row, ["category"]);
+                const group = getValueInsensitive(row, ["group"]);
+                const subGroup = getValueInsensitive(row, ["sub group"]);
 
-                    if (isSubGroupPresent(subGroup)) {
-                        businessActivity = subGroup;
-                        groupLine = `group: ${group}`;
-                    } else {
-                        businessActivity = group;
-                        groupLine = ""; // ซ่อนไม่ให้แสดง group ซ้ำ
-                    }
-
-                    const pageContent = `
-                        No.: ${no || "-"}
-                        Category: ${category || "-"}
-                        Business Activity: ${businessActivity || "-"}
-                        ${groupLine}
-                        ${description || ""}
-
-                        รายละเอียดการอนุมัติ:
-                        - BoD: ${getValueInsensitive(row, ["BoD"]) || "ไม่ระบุ"}
-                        - EX COM: ${getValueInsensitive(row, ["EX COM"]) || "ไม่ระบุ"}
-                        - CEO: ${getValueInsensitive(row, ["CEO"]) || "ไม่ระบุ"}
-                        - EVP: ${getValueInsensitive(row, ["EVP"]) || "ไม่ระบุ"}
-                        - SVP: ${getValueInsensitive(row, ["SVP"]) || "ไม่ระบุ"}
-                        - Div. Head: ${getValueInsensitive(row, ["Div. Head"]) || "ไม่ระบุ"}
-                        - SGH (Sales only): ${getValueInsensitive(row, ["SGH\r\n(Sales only)"]) || "ไม่ระบุ"}
-                        - Dept. Head: ${getValueInsensitive(row, ["Dept. Head"]) || "ไม่ระบุ"}
-
-                        การอนุมัติร่วม: ${getValueInsensitive(row, ["Co Approval"]) || "ไม่มี"}
-                        หมายเหตุ: ${getValueInsensitive(row, ["Remarks"]) || "ไม่มี"}
-                        ลิงก์แบบฟอร์ม: ${getValueInsensitive(row, ["Form URL"]) || "-"}
-                        หมายเหตุเพิ่มเติม: ${getValueInsensitive(row, ["Note"]) || "-"}
-                        `.trim();
-
-                    //metadata 
-                    const metadata: Record<string, any> = {
-                        source: "DOA_CUSTOME_TEST.xlsx",
-                        sheet: sheetName,
-                        "No.": no,
-                        "Business Activity": businessActivity,
-                        group: group,
-                        "sub group": subGroup,
-                        "Category": category,
-                    
-                    };
-
-                    return new Document<Record<string, any>>({
-                        pageContent,
-                        metadata,
-                    });
-                } catch (error: unknown) {
-                    console.error(`Error processing row ${index + 1}:`, error);
-                    console.error("Row data:", row);
-                    return null;
+                let businessActivity = "";
+                if (isSubGroupPresent(subGroup)) {
+                    businessActivity = subGroup;
+                } else {
+                    businessActivity = group;
                 }
-            })
-            .filter((doc): doc is Document<Record<string, any>> => doc !== null);
 
-        console.log(`Successfully processed ${docs.length} documents`);
+                const rowData = {
+                    no,
+                    category,
+                    businessActivity,
+                    group,
+                    subGroup,
+                };
+
+                if (!groupedByCategory[category]) {
+                    groupedByCategory[category] = [];
+                }
+                groupedByCategory[category].push(rowData);
+
+            } catch (error: unknown) {
+                console.error(`Error processing row ${index + 1}:`, error);
+            }
+        });
+
+        // Step 2: สร้าง summary documents เฉพาะ
+        const docs: Document<Record<string, any>>[] = Object.entries(groupedByCategory).map(([category, rows]) => {
+            let pageContent = `Category: ${category}\n`;
+            
+            rows.forEach((rowData: any) => {
+                const { no, businessActivity, group } = rowData;
+                
+                // เพิ่ม No. และ Business Activity
+                pageContent += `No.: ${no} Business Activity: ${businessActivity}\n`;
+                
+                // เพิ่ม group ถ้ามี และไม่ใช่ "-" และไม่ซ้ำกับ businessActivity
+                if (group && group !== "-" && group !== businessActivity) {
+                    pageContent += `group: ${group}\n`;
+                }
+            });
+
+            // หา category number สำหรับ metadata
+            const categoryNumber = category.split('.')[0] || category.substring(0, 1);
+
+            return new Document<Record<string, any>>({
+                pageContent: pageContent.trim(),
+                metadata: {
+                    source: "DOA_CUSTOME_TEST.xlsx",
+                    sheet: sheetName,
+                    "No.": categoryNumber,
+                    "Business Activity": `${category}`,
+                    group: category,
+                    "sub group": "-",
+                    "Category": category,
+                }
+            });
+        });
+
+        console.log(`Successfully processed ${docs.length} summary documents`);
 
         // สร้างโฟลเดอร์ json ถ้ายังไม่มี
         const jsonDir = path.resolve("./data/json");
@@ -180,23 +180,25 @@ export async function GET() {
             fs.mkdirSync(jsonDir, { recursive: true });
         }
 
-        // บันทึกเป็น JSON เพื่อดู structure
-        const outputPath = path.resolve("./data/json/doa_processed.json");
-        fs.writeFileSync(
-            outputPath,
-            JSON.stringify(
-                {
-                    columnNames,
-                    sampleRow,
-                    totalRows: docs.length,
-                    documents: docs.slice(0, 3), // เอาแค่ 3 documents แรกเพื่อดู
-                },
-                null,
-                2
-            ),
-            "utf8"
-        );
-        console.log(`Saved processed data to: ${outputPath}`);
+        // บันทึก JSON file (optional)
+        const summaryData = {
+            sourceInfo: {
+                sourceFile: "DOA_CUSTOME_TEST.xlsx",
+                sheetName: sheetName,
+                processedDate: new Date().toISOString(),
+                totalCategories: docs.length,
+                totalOriginalRows: sheetData.length
+            },
+            documents: docs.map((doc, index) => ({
+                id: index + 1,
+                pageContent: doc.pageContent,
+                metadata: doc.metadata
+            }))
+        };
+
+        const outputPath = path.resolve("./data/json/doa_summary_only.json");
+        fs.writeFileSync(outputPath, JSON.stringify(summaryData, null, 2), "utf8");
+        console.log(`Saved summary data to: ${outputPath}`);
 
         // เพิ่มข้อมูลลง Vector Store
         const supabase = await createClient();
@@ -205,20 +207,27 @@ export async function GET() {
             new OpenAIEmbeddings({ model: "text-embedding-3-large" }),
             {
                 client: supabase,
-                tableName: "documents_doa",
+                tableName: "main",
             }
         );
 
-        console.log("Adding documents to vector store...");
+        console.log("Adding summary documents to vector store...");
         await vectorStore.addDocuments(docs);
 
         return NextResponse.json({
-            message: `Successfully indexed ${docs.length} documents from Excel file.`,
+            message: `Successfully indexed ${docs.length} summary documents from Excel file.`,
             details: {
                 sourceFile: "DOA_CUSTOME_TEST.xlsx",
                 sheetName: sheetName,
                 columnNames: columnNames,
                 totalDocuments: docs.length,
+                totalOriginalRows: sheetData.length,
+                outputFile: "./data/json/doa_summary_only.json",
+                categories: docs.map(doc => ({
+                    category: doc.metadata.Category,
+                    itemCount: doc.metadata.totalItems,
+                    categoryNo: doc.metadata["No."]
+                })),
                 sampleDocument: docs[0]
                     ? {
                         pageContent: docs[0].pageContent.substring(0, 300) + "...",

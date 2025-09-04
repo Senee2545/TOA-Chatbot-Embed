@@ -1,13 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// http://localhost:3000/api/DOA-RAG
+// http://localhost:3000/api/Excel-to-Json
 
 import fs from "fs";
 import path from "path";
 import * as XLSX from "xlsx";
 import { Document } from "langchain/document";
-import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase";
-import { createClient } from "@/lib/supabase/server";
-import { OpenAIEmbeddings } from "@langchain/openai";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -152,6 +149,7 @@ export async function GET() {
                     const metadata: Record<string, any> = {
                         source: "DOA_CUSTOME_TEST.xlsx",
                         sheet: sheetName,
+                        row: index + 1,
                         "No.": no,
                         "Business Activity": businessActivity,
                         group: group,
@@ -172,7 +170,7 @@ export async function GET() {
             })
             .filter((doc): doc is Document<Record<string, any>> => doc !== null);
 
-        console.log(`Successfully processed ${docs.length} documents`);
+                console.log(`Successfully processed ${docs.length} documents`);
 
         // สร้างโฟลเดอร์ json ถ้ายังไม่มี
         const jsonDir = path.resolve("./data/json");
@@ -180,45 +178,62 @@ export async function GET() {
             fs.mkdirSync(jsonDir, { recursive: true });
         }
 
-        // บันทึกเป็น JSON เพื่อดู structure
-        const outputPath = path.resolve("./data/json/doa_processed.json");
+        // แปลงข้อมูลทั้งหมดเป็น JSON format ที่สะอาด
+        const completeJsonData = {
+            sourceInfo: {
+                sourceFile: "DOA_CUSTOME_TEST.xlsx",
+                sheetName: sheetName,
+                processedDate: new Date().toISOString(),
+                totalRecords: docs.length,
+                columnNames: columnNames
+            },
+            documents: docs.map((doc, index) => ({
+                id: index + 1,
+                pageContent: doc.pageContent,
+                metadata: doc.metadata
+            }))
+        };
+
+        // บันทึกไฟล์ JSON ทั้งหมด
+        const completeOutputPath = path.resolve("./data/json/doa_complete.json");
         fs.writeFileSync(
-            outputPath,
-            JSON.stringify(
-                {
-                    columnNames,
-                    sampleRow,
-                    totalRows: docs.length,
-                    documents: docs.slice(0, 3), // เอาแค่ 3 documents แรกเพื่อดู
-                },
-                null,
-                2
-            ),
+            completeOutputPath,
+            JSON.stringify(completeJsonData, null, 2),
             "utf8"
         );
-        console.log(`Saved processed data to: ${outputPath}`);
+        console.log(`Saved complete data to: ${completeOutputPath}`);
 
-        // เพิ่มข้อมูลลง Vector Store
-        const supabase = await createClient();
+        // บันทึกข้อมูลดิบจาก Excel
+        const rawJsonData = {
+            sourceInfo: {
+                sourceFile: "DOA_CUSTOME_TEST.xlsx", 
+                sheetName: sheetName,
+                processedDate: new Date().toISOString(),
+                columnNames: columnNames,
+                totalRows: sheetData.length
+            },
+            rawData: sheetData
+        };
 
-        const vectorStore = new SupabaseVectorStore(
-            new OpenAIEmbeddings({ model: "text-embedding-3-large" }),
-            {
-                client: supabase,
-                tableName: "documents_doa",
-            }
+        const rawOutputPath = path.resolve("./data/json/doa_raw.json");
+        fs.writeFileSync(
+            rawOutputPath,
+            JSON.stringify(rawJsonData, null, 2),
+            "utf8"
         );
-
-        console.log("Adding documents to vector store...");
-        await vectorStore.addDocuments(docs);
+        console.log(`Saved raw data to: ${rawOutputPath}`);
 
         return NextResponse.json({
-            message: `Successfully indexed ${docs.length} documents from Excel file.`,
+            message: `Successfully converted ${docs.length} documents from Excel to JSON.`,
             details: {
                 sourceFile: "DOA_CUSTOME_TEST.xlsx",
                 sheetName: sheetName,
                 columnNames: columnNames,
                 totalDocuments: docs.length,
+                outputFiles: [
+                    "./data/json/doa_complete.json",
+                    "./data/json/doa_raw.json"
+                ],
                 sampleDocument: docs[0]
                     ? {
                         pageContent: docs[0].pageContent.substring(0, 300) + "...",

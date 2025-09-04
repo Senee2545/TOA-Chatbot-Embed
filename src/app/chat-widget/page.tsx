@@ -1,8 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect,useRef } from 'react'
 import { ResponseStream } from '../components/response-stream'
 
 interface Message {
@@ -67,6 +66,7 @@ function TypewriterLink({
 }
 
 export default function ChatWidget(props: { email: string; id: string }) {
+  const [sessionId, setSessionId] = useState<string>('');
   const [showMenu, setShowMenu] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
       //{ text: `สวัสดีครับ คุณ ${props.email}! ผมสามารถช่วยอะไรคุณได้บ้างครับ?`, sender: 'bot' }
@@ -82,116 +82,33 @@ export default function ChatWidget(props: { email: string; id: string }) {
     buttonColor: '#007bff',
     borderRadius: '12px',
     position: 'center',
-    dataSource: 'chat8'
+    dataSource: ''
   })
 
-//   useEffect(() => {
-//     const params = new URLSearchParams(window.location.search)
-//     setSettings({
-//       width: params.get('width') || '350px',
-//       height: params.get('height') || '500px',
-//       bgColor: params.get('bgColor') || '#ffffff',
-//       textColor: params.get('textColor') || '#000000',
-//       buttonColor: params.get('buttonColor') || '#007bff',
-//       borderRadius: params.get('borderRadius') || '12px',
-//       position: params.get('position') || 'center',
-//       dataSource: params.get('dataSource') || 'chat5'
-//     })
 
-//     if (params.get('position') === 'bottom-right') {
-//       document.body.style.background = 'transparent'
-//       document.documentElement.style.background = 'transparent'
-//     }
-
-//     // ถ้าเป็น center แสดงว่าเป็น preview ให้เปิดไว้เลย
-//     if (params.get('position') === 'center') {
-//       setIsOpen(true)
-//     }
-//   }, [])
-
-
-
-// const handleSendMessage = async (e: React.FormEvent) => {
-//     e.preventDefault()
-//     if (input.trim() && !isLoading) {
-//       const userMessage: Message = { text: input, sender: 'user' }
-//       setMessages(prev => [...prev, userMessage])
-      
-//       const userInput = input
-//       setInput('')
-//       setIsLoading(true)
-      
-//       try {
-//         // เรียก API chat8
-//         const response = await fetch('/api/chat5', {
-//           method: 'POST',
-//           headers: {
-//             'Content-Type': 'application/json',
-//           },
-//           body: JSON.stringify({
-//             messages: [{ role: 'user', content: userInput }]
-//           }),
-//         })
-
-//         if (!response.ok) {
-//           throw new Error('Network response was not ok')
-//         }
-
-//         // อ่าน streaming response
-//         const reader = response.body?.getReader()
-//         const decoder = new TextDecoder()
-        
-//         if (reader) {
-//           let accumulatedText = ''
-          
-//           // เพิ่ม empty bot message สำหรับ streaming
-//           setMessages(prev => [...prev, { text: '', sender: 'bot' }])
-          
-//           while (true) {
-//             const { done, value } = await reader.read()
-            
-//             if (done) break
-            
-//             const chunk = decoder.decode(value)
-//             accumulatedText += chunk
-            
-//             // อัพเดทข้อความแบบ real-time
-//             setMessages(prev => {
-//               const newMessages = [...prev]
-//               const lastIndex = newMessages.length - 1
-//               newMessages[lastIndex] = {
-//                 text: accumulatedText,
-//                 sender: 'bot'
-//               }
-//               return newMessages
-//             })
-//           }
-//         }
-        
-//       } catch (error) {
-//         console.error('Error:', error)
-//         setMessages(prev => [...prev, { 
-//           text: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง 😔', 
-//           sender: 'bot' 
-//         }])
-//       } finally {
-//         setIsLoading(false)
-//       }
-//     }
-//   }
+  // โหลด sessionId จาก localStorage เมื่อเริ่มต้น
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedSessionId = localStorage.getItem('doa_chat_session_id');
+      if (savedSessionId) {
+        setSessionId(savedSessionId);
+        console.log('📱 Loaded sessionId from localStorage:', savedSessionId);
+      }
+    }
+  }, []);
 
 useEffect(() => {
-    console.log('📋 Current embed settings:', settings)
+    //console.log('📋 Current embed settings:', settings)
 }, [settings])
 
 useEffect(() => {
-    console.log('🟢 useEffect triggered - reading URL parameters')
+    //console.log('🟢 useEffect triggered - reading URL parameters')
     
     const params = new URLSearchParams(window.location.search)
     
-    console.log('🔗 Full URL:', window.location.href)
-    console.log('🔗 Search params:', window.location.search)
-    console.log('🔗 DataSource param:', params.get('dataSource'))
+    //console.log('🔗 Full URL:', window.location.href)
+    //console.log('🔗 Search params:', window.location.search)
+    //console.log('🔗 DataSource param:', params.get('dataSource'))
     
     const newSettings = {
       width: params.get('width') || '350px',
@@ -201,15 +118,15 @@ useEffect(() => {
       buttonColor: params.get('buttonColor') || '#007bff',
       borderRadius: params.get('borderRadius') || '12px',
       position: params.get('position') || 'center',
-      dataSource: params.get('dataSource') || 'chat5'
+      dataSource: params.get('dataSource') || ''
     }
     
-    console.log('🎯 New settings to set:', newSettings)
-    console.log('🎯 Previous settings:', settings)
+    //console.log('🎯 New settings to set:', newSettings)
+    //console.log('🎯 Previous settings:', settings)
     
     setSettings(newSettings)
     
-    console.log('🎯 Settings updated to:', newSettings)
+    //console.log('🎯 Settings updated to:', newSettings)
 
     if (params.get('position') === 'bottom-right') {
       document.body.style.background = 'transparent'
@@ -223,92 +140,94 @@ useEffect(() => {
 
 // เพิ่ม useEffect เพื่อ track การเปลี่ยนแปลงของ settings
 useEffect(() => {
-    console.log('🔄 Settings changed:', settings)
+    //console.log('🔄 Settings changed:', settings)
 }, [settings])
 
-// const handleSendMessage = async (e: React.FormEvent) => {
-//     e.preventDefault()
-//     if (input.trim() && !isLoading) {
-//       const userMessage: Message = { text: input, sender: 'user', isCompleted: true }
-//       setMessages(prev => [...prev, userMessage])
-      
-//       const userInput = input
-//       setInput('')
-//       setIsLoading(true)
-      
-//       try {
-//         // ✅ ใช้ dataSource ที่เลือกมาแทน hardcode chat5
-//         const apiEndpoint = `/api/${settings.dataSource}`
-        
-//         console.log('🔥 เรียก API:', apiEndpoint) // เพิ่ม log เพื่อ debug
-        
-//         const response = await fetch(apiEndpoint, {
-//           method: 'POST',
-//           headers: {
-//             'Content-Type': 'application/json',
-//           },
-//           body: JSON.stringify({
-//             messages: [{ role: 'user', content: userInput }]
-//           }),
-//         })
 
-//         if (!response.ok) {
-//           throw new Error('Network response was not ok')
-//         }
 
-//         // รับ JSON response
-//         const data = await response.json()
-        
-//         // เพิ่มข้อความบอทแบบยังไม่เสร็จ (จะมี typewriter animation)
-//         const botMessage: Message = { 
-//           text: JSON.stringify(data.content),
-//           sender: 'bot',
-//           isCompleted: false
-//         }
-//         setMessages(prev => [...prev, botMessage])
+//  ด้านบนภายใน component ChatWidget (คู่กับ useState/useEffect อื่น ๆ)
+const greetedKeyRef = useRef<string | null>(null)
 
-//         // หลังจาก animation เสร็จ (3-5 วินาที) ค่อย mark เป็นเสร็จ
-//         setTimeout(() => {
-//           setMessages(prev => {
-//             const newMessages = [...prev]
-//             const lastBotIndex = newMessages.findLastIndex(msg => msg.sender === 'bot')
-//             if (lastBotIndex !== -1) {
-//               newMessages[lastBotIndex] = {
-//                 ...newMessages[lastBotIndex],
-//                 isCompleted: true
-//               }
-//             }
-//             return newMessages
-//           })
-//         }, 4000)
-        
-//       } catch (error) {
-//         console.error('Error:', error)
-//         setMessages(prev => [...prev, { 
-//           text: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง 😔', 
-//           sender: 'bot',
-//           isCompleted: true
-//         }])
-//       } finally {
-//         setIsLoading(false)
-//       }
-//     }
-//   }
+// helper: push ข้อความบอท + mark complete
+const pushBotMessage = (content: string) => {
+  // ยังพิมพ์อยู่ → ให้ TypewriterLink ทำงาน
+  setMessages(prev => [...prev, { text: JSON.stringify(content), sender: 'bot', isCompleted: false }])
+  // mark เสร็จทีหลังเพื่อหยุด typewriter (ปรับเวลาได้)
+  setTimeout(() => {
+    setMessages(prev => {
+      const next = [...prev]
+      const lastBot = next.findLastIndex(m => m.sender === 'bot')
+      if (lastBot !== -1) next[lastBot] = { ...next[lastBot], isCompleted: true }
+      return next
+    })
+  }, 4000)
+}
+
+// Greeting สำหรับ Preview Mode (center) — ยิงครั้งแรกเมื่อ mount หรือ dataSource เปลี่ยน
+useEffect(() => {
+  if (settings.position !== 'center') return
+  const key = `center|${settings.dataSource}`
+  if (greetedKeyRef.current === key) return
+
+  ;(async () => {
+    try {
+      const api = `/api/${settings.dataSource}`
+      const res = await fetch(api, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [] }), // ← สำคัญ: ให้ API ส่ง greeting
+      })
+      if (!res.ok) return
+      const data = await res.json()
+      pushBotMessage(data.content)
+      greetedKeyRef.current = key
+    } catch (e) {
+      console.error('greeting (center) error:', e)
+    }
+  })()
+}, [settings.position, settings.dataSource])
+
+// Greeting สำหรับ Embed Mode (bottom-right) — ยิงเมื่อเปิดวิซเจ็ตครั้งแรก/เปลี่ยน dataSource
+useEffect(() => {
+  if (settings.position !== 'bottom-right') return
+  if (!isOpen) return
+  const key = `embed|${settings.dataSource}`
+  if (greetedKeyRef.current === key) return
+
+  ;(async () => {
+    try {
+      const api = `/api/${settings.dataSource}`
+      const res = await fetch(api, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [] }),
+      })
+      if (!res.ok) return
+      const data = await res.json()
+      pushBotMessage(data.content)
+      greetedKeyRef.current = key
+    } catch (e) {
+      console.error('greeting (embed) error:', e)
+    }
+  })()
+}, [isOpen, settings.position, settings.dataSource])
+
+
 
 
 const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
     if (input.trim() && !isLoading) {
-      console.log('📤 Sending message...')
-      console.log('🎯 Current settings state:', settings)
-      console.log('🎯 DataSource from state:', settings.dataSource)
+      //console.log('📤 Sending message...')
+      //console.log('🎯 Current settings state:', settings)
+      //console.log('🎯 DataSource from state:', settings.dataSource)
       
       // อ่าน URL อีกครั้งเพื่อความแน่ใจ
       const params = new URLSearchParams(window.location.search)
-      const urlDataSource = params.get('dataSource') || 'chat5'
+      const urlDataSource = params.get('dataSource') || ''
       
-      console.log('🔗 DataSource from URL (fresh read):', urlDataSource)
-      console.log('⚖️ Comparison - State vs URL:', settings.dataSource, 'vs', urlDataSource)
+      //console.log('🔗 DataSource from URL (fresh read):', urlDataSource)
+      //console.log('⚖️ Comparison - State vs URL:', settings.dataSource, 'vs', urlDataSource)
       
       const userMessage: Message = { text: input, sender: 'user', isCompleted: true }
       setMessages(prev => [...prev, userMessage])
@@ -321,7 +240,7 @@ const handleSendMessage = async (e: React.FormEvent) => {
         // ใช้ dataSource จาก URL เพื่อความแน่ใจ
         const apiEndpoint = `/api/${urlDataSource}`
         
-        console.log('🔥 API endpoint to call:', apiEndpoint)
+        //console.log('🔥 API endpoint to call:', apiEndpoint)
         
         const response = await fetch(apiEndpoint, {
           method: 'POST',
@@ -329,11 +248,12 @@ const handleSendMessage = async (e: React.FormEvent) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            messages: [{ role: 'user', content: userInput }]
+            messages: [{ role: 'user', content: userInput }],
+            sessionId: sessionId || undefined
           }),
         })
 
-        console.log('📡 API response status:', response.status)
+        //console.log('📡 API response status:', response.status)
 
         if (!response.ok) {
           throw new Error(`Network response was not ok: ${response.status}`)
@@ -341,7 +261,7 @@ const handleSendMessage = async (e: React.FormEvent) => {
 
         // รับ JSON response
         const data = await response.json()
-        console.log('📥 API response data:', data)
+        //console.log('📥 API response data:', data)
         
         // เพิ่มข้อความบอทแบบยังไม่เสร็จ (จะมี typewriter animation)
         const botMessage: Message = { 
@@ -381,8 +301,9 @@ const handleSendMessage = async (e: React.FormEvent) => {
 // แก้ในส่วนการแสดงผล Messages (ทั้ง Preview และ Embed Mode)
   const renderMessage = (msg: Message) => {
     if (msg.sender === 'bot') {
+      //const parsed = JSON.parse(msg.text)
       if (msg.text) {
-        // ✅ ถ้าข้อความเสร็จแล้ว แสดงปกติ ไม่ใช้ ResponseStream
+        //  ถ้าข้อความเสร็จแล้ว แสดงปกติ ไม่ใช้ ResponseStream
         if (msg.isCompleted) {
           return (
             <div className="whitespace-pre-line">
@@ -390,7 +311,7 @@ const handleSendMessage = async (e: React.FormEvent) => {
             </div>
           )
         } else {
-          // ✅ ถ้ายังไม่เสร็จ ใช้ ResponseStream (สำหรับ streaming)
+          //  ถ้ายังไม่เสร็จ ใช้ ResponseStream (สำหรับ streaming)
           return (
             <ResponseStream
               textStream={JSON.parse(msg.text)}
