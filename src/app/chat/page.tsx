@@ -1,10 +1,15 @@
-'use client'
+'use client' 
 
 import { useState, useRef, useEffect } from 'react'
 import { ResponseStream } from '../components/response-stream'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+
+interface userProps {
+  email?: string;
+  id?: string;
+}
 
 interface Message {
   text: string
@@ -55,7 +60,7 @@ function TypewriterLink({
   )
 }
 
-export default function ChatPage(props: { email: string; id: string }) {
+export default function ChatPage(props: userProps) {
   const [messages, setMessages] = useState<Message[]>([
     //{ text: `สวัสดีครับ คุณ ${props.email}! ผมสามารถช่วยอะไรคุณได้บ้างครับ?`, sender: 'bot' }
   ])
@@ -206,7 +211,8 @@ export default function ChatPage(props: { email: string; id: string }) {
                   className="flex items-center space-x-3 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 px-4 py-2 rounded-xl border border-gray-200 transition-all duration-200 group"
                 >
                   <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                    {props.email.charAt(0).toUpperCase()}
+                    {/* {props.email.charAt(0).toUpperCase()} */}
+                    {props.email?.charAt(0)?.toUpperCase() ?? ""}
                   </div>
                   <div className="text-left">
                     <div className="text-sm font-medium text-gray-900">{props.email}</div>
@@ -222,7 +228,8 @@ export default function ChatPage(props: { email: string; id: string }) {
                   <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 p-4 z-50">
                     <div className="text-center mb-4">
                       <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-3">
-                        {props.email.charAt(0).toUpperCase()}
+                        {/* {props.email.charAt(0).toUpperCase()} */}
+                        {props.email?.charAt(0)?.toUpperCase() ?? ""}
                       </div>
                       <h3 className="font-semibold text-gray-900">ข้อมูลผู้ใช้งาน</h3>
                     </div>
@@ -300,7 +307,8 @@ export default function ChatPage(props: { email: string; id: string }) {
               onClick={() => setShowUserInfo(!showUserInfo)}
               className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm transition-transform duration-200 hover:scale-105"
             >
-              {props.email.charAt(0).toUpperCase()}
+              {/* {props.email.charAt(0).toUpperCase()} */}
+              {props.email?.charAt(0)?.toUpperCase() ?? ""}
             </button>
           </div>
 
@@ -309,7 +317,8 @@ export default function ChatPage(props: { email: string; id: string }) {
             <div className="mt-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
               <div className="text-center mb-3">
                 <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg mx-auto mb-2">
-                  {props.email.charAt(0).toUpperCase()}
+                  {/* {props.email.charAt(0).toUpperCase()} */}
+                  {props.email?.charAt(0)?.toUpperCase() ?? ""}
                 </div>
                 <h3 className="font-semibold text-gray-900 text-sm">ข้อมูลผู้ใช้งาน</h3>
               </div>
@@ -331,7 +340,11 @@ export default function ChatPage(props: { email: string; id: string }) {
                     <span className="text-xs font-medium text-gray-700">User ID</span>
                   </div>
                   <div className="text-xs text-gray-600 font-mono break-all">
-                    {props.id.length > 20 ? `${props.id.substring(0, 20)}...` : props.id}
+                    {/* {props.id.length > 20 ? `${props.id.substring(0, 20)}...` : props.id} */}
+                    {(props.id ?? "").length > 20
+                      ? `${(props.id ?? "").substring(0, 20)}...`
+                      : (props.id ?? "")
+                    }
                   </div>
                 </div>
 
@@ -395,7 +408,7 @@ export default function ChatPage(props: { email: string; id: string }) {
                     ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-sm'
                     : 'bg-gray-200 text-gray-600'
                     }`}>
-                    {msg.sender === 'user' ? props.email.charAt(0).toUpperCase() : '🤖'}
+                    {msg.sender === 'user' ? (props.email?.charAt(0)?.toUpperCase() ?? '') : '🤖'}
                   </div>
                   <div
                     className={`px-3 md:px-4 py-2 md:py-3 rounded-lg transition-all duration-200 hover:shadow-md text-sm md:text-base ${msg.sender === 'user'

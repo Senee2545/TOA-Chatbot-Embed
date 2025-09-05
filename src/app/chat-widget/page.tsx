@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client'
 
 import { useState, useEffect,useRef } from 'react'
 import { ResponseStream } from '../components/response-stream'
+
 
 interface Message {
   text: string
@@ -66,7 +66,7 @@ function TypewriterLink({
   )
 }
 
-export default function ChatWidget(props: { email: string; id: string }) {
+export default function ChatWidget() {
   const [sessionId, setSessionId] = useState<string>('');
   const [showMenu, setShowMenu] = useState(false)
   const [messages, setMessages] = useState<Message[]>([

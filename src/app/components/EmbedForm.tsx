@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { } from 'react'
 
 interface EmbedSettings {
   width: string
@@ -18,7 +18,7 @@ interface EmbedFormProps {
 }
 
 export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps) {
-  const [saved, setSaved] = useState(false)
+  //const [saved, setSaved] = useState(false)
 
   // ฐานข้อมูลที่มีให้เลือก
   const dataSources = [
@@ -59,7 +59,7 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
     onSettingsChange(newSettings)
   }
 
-  const handleSaveSettings = async () => {
+  //const handleSaveSettings = async () => {
     // TODO: บันทึกการตั้งค่าลง database
     // try {
     //   await fetch('/api/settings', {
@@ -72,9 +72,9 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
     // } catch (error) {
     //   alert('เกิดข้อผิดพลาดในการบันทึก')
     // }
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
-  }
+    //setSaved(true)
+    //setTimeout(() => setSaved(false), 2000)
+  //}
 
   const presetColors = [
     { name: 'Blue', bg: '#ffffff', text: '#1f2937', button: '#3b82f6' },
