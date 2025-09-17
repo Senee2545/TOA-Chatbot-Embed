@@ -112,8 +112,12 @@ export default function ChatPage(props: userProps) {
       setInput('')
       setIsLoading(true)
 
+      // เพิ่มข้อความ "กำลังพิมพ์..." ของบอท
+      const loadingMessage: Message = { text: '', sender: 'bot' }
+      setMessages(prev => [...prev, loadingMessage])
+
       try {
-        const response = await fetch('/api/DOA-chat', {
+        const response = await fetch('/api/DOA-chat2', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -130,19 +134,27 @@ export default function ChatPage(props: userProps) {
         // รับ JSON response
         const data = await response.json()
 
-        // เพิ่มข้อความบอทที่มี JSON format
-        const botMessage: Message = {
-          text: JSON.stringify(data.content), // ห่อด้วย JSON.stringify เพื่อให้ ResponseStream ใช้ JSON.parse() ได้
-          sender: 'bot'
-        }
-        setMessages(prev => [...prev, botMessage])
+        // แทนที่ข้อความ loading ด้วยข้อความจริงจากบอท
+        setMessages(prev => {
+          const newMessages = [...prev]
+          newMessages[newMessages.length - 1] = {
+            text: JSON.stringify(data.content),
+            sender: 'bot'
+          }
+          return newMessages
+        })
 
       } catch (error) {
         console.error('Error:', error)
-        setMessages(prev => [...prev, {
-          text: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง 😔',
-          sender: 'bot'
-        }])
+        // แทนที่ข้อความ loading ด้วยข้อความ error
+        setMessages(prev => {
+          const newMessages = [...prev]
+          newMessages[newMessages.length - 1] = {
+            text: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง 😔',
+            sender: 'bot'
+          }
+          return newMessages
+        })
       } finally {
         setIsLoading(false)
       }
@@ -157,6 +169,9 @@ export default function ChatPage(props: userProps) {
 
     ;(async () => {
       try {
+        // เพิ่มข้อความ loading ก่อน
+        setMessages(prev => [...prev, { text: '', sender: 'bot' }])
+        
         const res = await fetch('/api/DOA-chat', {
           method: 'POST',
           headers: {'Content-Type':'application/json'},
@@ -164,11 +179,31 @@ export default function ChatPage(props: userProps) {
         })
         if (!res.ok) return
         const data = await res.json()
-        setMessages(prev => [...prev, 
-          { text: JSON.stringify(data.content), sender: 'bot' }
-        ])
+        
+        // แทนที่ข้อความ loading ด้วยข้อความจริง
+        setMessages(prev => {
+          const newMessages = [...prev]
+          if (newMessages.length > 0) {
+            newMessages[newMessages.length - 1] = {
+              text: JSON.stringify(data.content),
+              sender: 'bot'
+            }
+          }
+          return newMessages
+        })
       } catch (e) {
         console.error('greeting error', e)
+        // แทนที่ด้วยข้อความ error
+        setMessages(prev => {
+          const newMessages = [...prev]
+          if (newMessages.length > 0) {
+            newMessages[newMessages.length - 1] = {
+              text: 'เกิดข้อผิดพลาดในการเชื่อมต่อ',
+              sender: 'bot'
+            }
+          }
+          return newMessages
+        })
       }
     })()
 }, [])
@@ -179,14 +214,14 @@ export default function ChatPage(props: userProps) {
 
 
   return (
-    <div className="h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Header - Desktop */}
-      <header className="hidden md:block bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <header className="hidden bg-white border-b shadow-sm md:block">
+        <div className="px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               {/* Logo */}
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full flex items-center justify-center">
+              <div className="flex items-center justify-center w-10 h-10 text-white rounded-full bg-gradient-to-r from-blue-500 to-purple-600">
                 🤖
               </div>
               <div>
@@ -198,19 +233,19 @@ export default function ChatPage(props: userProps) {
             {/* User Info - Desktop */}
             <div className="flex items-center space-x-4">
               <nav className="flex items-center space-x-4">
-                <Link href="/embed" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                <Link href="/embed" className="px-3 py-2 text-gray-600 transition-colors rounded-lg hover:text-gray-900 hover:bg-gray-100">
                   สร้างแชทบอท
                 </Link>
-                {/* <Link href="/" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                {/* <Link href="/" className="px-3 py-2 text-gray-600 transition-colors rounded-lg hover:text-gray-900 hover:bg-gray-100">
                   หน้าแรก
                 </Link> */}
               </nav>
               <div className="relative">
                 <button
                   onClick={() => setShowUserInfo(!showUserInfo)}
-                  className="flex items-center space-x-3 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 px-4 py-2 rounded-xl border border-gray-200 transition-all duration-200 group"
+                  className="flex items-center px-4 py-2 space-x-3 transition-all duration-200 border border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 rounded-xl group"
                 >
-                  <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                  <div className="flex items-center justify-center w-10 h-10 text-sm font-semibold text-white rounded-full bg-gradient-to-r from-indigo-500 to-purple-600">
                     {/* {props.email.charAt(0).toUpperCase()} */}
                     {props.email?.charAt(0)?.toUpperCase() ?? ""}
                   </div>
@@ -225,9 +260,9 @@ export default function ChatPage(props: userProps) {
 
                 {/* User Info Dropdown - Desktop */}
                 {showUserInfo && (
-                  <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-200 p-4 z-50">
-                    <div className="text-center mb-4">
-                      <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-3">
+                  <div className="absolute right-0 z-50 p-4 mt-2 bg-white border border-gray-200 shadow-lg top-full w-80 rounded-xl">
+                    <div className="mb-4 text-center">
+                      <div className="flex items-center justify-center w-16 h-16 mx-auto mb-3 text-xl font-bold text-white rounded-full bg-gradient-to-r from-indigo-500 to-purple-600">
                         {/* {props.email.charAt(0).toUpperCase()} */}
                         {props.email?.charAt(0)?.toUpperCase() ?? ""}
                       </div>
@@ -235,22 +270,22 @@ export default function ChatPage(props: userProps) {
                     </div>
 
                     <div className="space-y-3">
-                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-3 rounded-lg">
-                        <div className="flex items-center space-x-2 mb-1">
+                      <div className="p-3 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50">
+                        <div className="flex items-center mb-1 space-x-2">
                           <span className="text-blue-600">📧</span>
                           <span className="text-sm font-medium text-gray-700">อีเมล</span>
                         </div>
-                        <div className="text-sm text-gray-900 font-mono bg-white px-2 py-1 rounded border">
+                        <div className="px-2 py-1 font-mono text-sm text-gray-900 bg-white border rounded">
                           {props.email}
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 rounded-lg">
-                        <div className="flex items-center space-x-2 mb-1">
+                      <div className="p-3 rounded-lg bg-gradient-to-r from-purple-50 to-pink-50">
+                        <div className="flex items-center mb-1 space-x-2">
                           <span className="text-purple-600">🪪</span>
                           <span className="text-sm font-medium text-gray-700">User ID</span>
                         </div>
-                        <div className="text-xs text-gray-600 font-mono bg-white px-2 py-1 rounded border break-all">
+                        <div className="px-2 py-1 font-mono text-xs text-gray-600 break-all bg-white border rounded">
                           {props.id}
                         </div>
                       </div>
@@ -262,7 +297,7 @@ export default function ChatPage(props: userProps) {
                         >
                           {isLoggingOut ? (
                             <>
-                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                              <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
                               <span>กำลังออกจากระบบ...</span>
                             </>
                           ) : (
@@ -286,11 +321,11 @@ export default function ChatPage(props: userProps) {
       </header>
 
       {/* Mobile Header */}
-      <header className="md:hidden bg-white shadow-sm border-b">
+      <header className="bg-white border-b shadow-sm md:hidden">
         <div className="px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-2 rounded-full text-lg">
+              <div className="p-2 text-lg text-white rounded-full bg-gradient-to-r from-blue-500 to-purple-600">
                 🤖
               </div>
               <div>
@@ -305,7 +340,7 @@ export default function ChatPage(props: userProps) {
             {/* User Avatar - Mobile */}
             <button
               onClick={() => setShowUserInfo(!showUserInfo)}
-              className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm transition-transform duration-200 hover:scale-105"
+              className="flex items-center justify-center w-10 h-10 text-sm font-semibold text-white transition-transform duration-200 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:scale-105"
             >
               {/* {props.email.charAt(0).toUpperCase()} */}
               {props.email?.charAt(0)?.toUpperCase() ?? ""}
@@ -314,32 +349,32 @@ export default function ChatPage(props: userProps) {
 
           {/* User Info Dropdown - Mobile */}
           {showUserInfo && (
-            <div className="mt-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
-              <div className="text-center mb-3">
-                <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg mx-auto mb-2">
+            <div className="p-4 mt-4 border border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
+              <div className="mb-3 text-center">
+                <div className="flex items-center justify-center w-12 h-12 mx-auto mb-2 text-lg font-bold text-white rounded-full bg-gradient-to-r from-indigo-500 to-purple-600">
                   {/* {props.email.charAt(0).toUpperCase()} */}
                   {props.email?.charAt(0)?.toUpperCase() ?? ""}
                 </div>
-                <h3 className="font-semibold text-gray-900 text-sm">ข้อมูลผู้ใช้งาน</h3>
+                <h3 className="text-sm font-semibold text-gray-900">ข้อมูลผู้ใช้งาน</h3>
               </div>
 
               <div className="space-y-2">
-                <div className="bg-white p-2 rounded-lg">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <span className="text-blue-600 text-sm">📧</span>
+                <div className="p-2 bg-white rounded-lg">
+                  <div className="flex items-center mb-1 space-x-2">
+                    <span className="text-sm text-blue-600">📧</span>
                     <span className="text-xs font-medium text-gray-700">อีเมล</span>
                   </div>
-                  <div className="text-xs text-gray-900 font-mono">
+                  <div className="font-mono text-xs text-gray-900">
                     {props.email}
                   </div>
                 </div>
 
-                <div className="bg-white p-2 rounded-lg">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <span className="text-purple-600 text-sm">🆔</span>
+                <div className="p-2 bg-white rounded-lg">
+                  <div className="flex items-center mb-1 space-x-2">
+                    <span className="text-sm text-purple-600">🆔</span>
                     <span className="text-xs font-medium text-gray-700">User ID</span>
                   </div>
-                  <div className="text-xs text-gray-600 font-mono break-all">
+                  <div className="font-mono text-xs text-gray-600 break-all">
                     {/* {props.id.length > 20 ? `${props.id.substring(0, 20)}...` : props.id} */}
                     {(props.id ?? "").length > 20
                       ? `${(props.id ?? "").substring(0, 20)}...`
@@ -352,11 +387,11 @@ export default function ChatPage(props: userProps) {
                   <button
                     onClick={handleLogout}
                     disabled={isLoggingOut}
-                    className="w-full bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-3 py-2 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 text-sm font-medium"
+                    className="flex items-center justify-center w-full px-3 py-2 space-x-2 text-sm font-medium text-white transition-all duration-200 rounded-lg bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isLoggingOut ? (
                       <>
-                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <div className="w-3 h-3 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
                         <span>กำลังออก...</span>
                       </>
                     ) : (
@@ -377,19 +412,19 @@ export default function ChatPage(props: userProps) {
 
       {/* Main Chat Area - Responsive */}
       {/* Main Chat Area - Responsive */}
-      <main className="flex-1 flex flex-col md:max-w-4xl md:mx-auto md:px-4 md:py-8 w-full overflow-hidden">
+      <main className="flex flex-col flex-1 w-full overflow-hidden md:max-w-4xl md:mx-auto md:px-4 md:py-8">
         <div className="flex-1 flex flex-col bg-white md:rounded-xl md:shadow-lg border-0 md:border border-gray-200 overflow-hidden h-[calc(100vh-140px)] md:h-[70vh]">
           {/* Chat Header - Desktop Only */}
-          <div className="hidden md:block bg-gradient-to-r from-blue-50 to-purple-50 px-6 py-4 border-b shrink-0">
+          <div className="hidden px-6 py-4 border-b md:block bg-gradient-to-r from-blue-50 to-purple-50 shrink-0">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full flex items-center justify-center">
+              <div className="flex items-center justify-center w-10 h-10 text-white rounded-full bg-gradient-to-r from-blue-500 to-purple-600">
                 🤖
               </div>
               <div>
                 <h2 className="text-lg font-semibold text-gray-800">แชทบอท AI</h2>
                 <p className="text-sm text-gray-600">พร้อมให้บริการตลอด 24 ชั่วโมง</p>
               </div>
-              <div className="ml-auto flex items-center space-x-2">
+              <div className="flex items-center ml-auto space-x-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 <span className="text-xs text-gray-500">ออนไลน์</span>
               </div>
@@ -397,7 +432,7 @@ export default function ChatPage(props: userProps) {
           </div>
 
           {/* Messages Area - Scrollable */}
-          <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-gray-50 md:bg-white">
+          <div className="flex-1 p-4 space-y-4 overflow-y-auto md:p-6 bg-gray-50 md:bg-white">
             {messages.map((msg, index) => (
               <div
                 key={index}
@@ -464,10 +499,14 @@ export default function ChatPage(props: userProps) {
                           />
                         )
                       })() : (
-                        <div className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        // แสดง loading dots พร้อมข้อความ "กำลังพิมพ์..."
+                        <div className="flex items-center space-x-3">
+                          <div className="flex items-center space-x-1">
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                            <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          </div>
+                          <span className="text-sm text-gray-500"></span>
                         </div>
                       )
                     ) : (
@@ -478,16 +517,13 @@ export default function ChatPage(props: userProps) {
                 </div>
               </div>
             ))}
-
-            <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-gray-50 md:bg-white">
-              {/* messages */}
-              <div ref={messagesEndRef} />
-            </div>
-
+            
+            {/* Scroll anchor */}
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Input Area - Fixed */}
-          <form onSubmit={handleSendMessage} className="shrink-0 p-4 md:p-6 border-t bg-white md:bg-gray-50">
+          <form onSubmit={handleSendMessage} className="p-4 bg-white border-t shrink-0 md:p-6 md:bg-gray-50">
             <div className="flex space-x-2 md:space-x-4">
               <input
                 type="text"
@@ -495,16 +531,16 @@ export default function ChatPage(props: userProps) {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="พิมพ์ข้อความ..."
                 disabled={isLoading}
-                className="flex-1 px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="flex-1 px-3 py-2 text-sm transition-all border border-gray-300 rounded-lg md:px-4 md:py-3 md:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || isLoading}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 md:px-6 py-2 md:py-3 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md text-sm md:text-base font-medium"
+                className="px-4 py-2 text-sm font-medium text-white transition-all duration-200 transform rounded-lg shadow-md bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed md:px-6 md:py-3 hover:scale-105 md:text-base"
               >
                 {isLoading ? (
                   <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
                     <span className="hidden sm:inline">กำลังส่ง...</span>
                   </div>
                 ) : (

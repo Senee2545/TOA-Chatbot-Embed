@@ -349,7 +349,25 @@ function ResponseStream({
   const renderContent = () => {
     switch (mode) {
       case "typewriter":
-        return <>{displayedText}</>
+        return (
+          <>
+            <style>{`
+              @keyframes blink {
+                0%, 50% { opacity: 1; }
+                51%, 100% { opacity: 0; }
+              }
+            `}</style>
+            <span>
+              {displayedText}
+              {!isComplete && (
+                <span 
+                  className="inline-block w-2 h-5 ml-1 bg-gray-600"
+                  style={{ animation: 'blink 1s infinite' }}
+                />
+              )}
+            </span>
+          </>
+        )
 
       case "fade":
         return (

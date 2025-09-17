@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
-import { useState, useEffect,useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { ResponseStream } from '../components/response-stream'
 
 
@@ -144,10 +144,32 @@ useEffect(() => {
     //console.log('🔄 Settings changed:', settings)
 }, [settings])
 
+// Auto-scroll when messages change
+useEffect(() => {
+  scrollToBottom()
+}, [messages])
+
 
 
 //  ด้านบนภายใน component ChatWidget (คู่กับ useState/useEffect อื่น ๆ)
 const greetedKeyRef = useRef<string | null>(null)
+const messagesEndRef = useRef<HTMLDivElement>(null)
+const chatContainerRef = useRef<HTMLDivElement>(null)
+
+// Auto-scroll to bottom function
+const scrollToBottom = () => {
+  messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+}
+
+// Typing indicator component
+const TypingIndicator = () => (
+  <div className="flex items-center py-2 space-x-1">
+    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+    <span className="ml-2 text-xs text-gray-500"></span>
+  </div>
+)
 
 // helper: push ข้อความบอท + mark complete
 const pushBotMessage = (content: string, apiResponse?: any) => {
@@ -246,6 +268,13 @@ const handleSendMessage = async (e: React.FormEvent) => {
       setInput('')
       setIsLoading(true)
       
+      // Add typing indicator
+      const typingMessage: Message = { text: '', sender: 'bot', isCompleted: false }
+      setMessages(prev => [...prev, typingMessage])
+      
+      // Auto-scroll after adding user message and typing indicator
+      setTimeout(scrollToBottom, 100)
+      
       try {
         // ใช้ dataSource จาก URL เพื่อความแน่ใจ
         const apiEndpoint = `/api/${urlDataSource}`
@@ -280,13 +309,25 @@ const handleSendMessage = async (e: React.FormEvent) => {
           console.log('Updated sessionId from chat:', data.sessionId)
         }
         
-        // เพิ่มข้อความบอทแบบยังไม่เสร็จ (จะมี typewriter animation)
-        const botMessage: Message = { 
-          text: JSON.stringify(data.content),
-          sender: 'bot',
-          isCompleted: false
-        }
-        setMessages(prev => [...prev, botMessage])
+        // Remove typing indicator and add bot response
+        setMessages(prev => {
+          const newMessages = [...prev]
+          // Remove the typing indicator (last bot message with empty text)
+          const typingIndex = newMessages.findLastIndex(msg => msg.sender === 'bot' && msg.text === '')
+          if (typingIndex !== -1) {
+            newMessages.splice(typingIndex, 1)
+          }
+          // Add the actual bot response
+          const botMessage: Message = { 
+            text: JSON.stringify(data.content),
+            sender: 'bot',
+            isCompleted: false
+          }
+          return [...newMessages, botMessage]
+        })
+        
+        // Auto-scroll to show new response
+        setTimeout(scrollToBottom, 100)
 
         // หลังจาก animation เสร็จ (3-5 วินาที) ค่อย mark เป็นเสร็จ
         setTimeout(() => {
@@ -305,11 +346,22 @@ const handleSendMessage = async (e: React.FormEvent) => {
         
       } catch (error) {
         console.error('❌ API Error:', error)
-        setMessages(prev => [...prev, { 
-          text: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง 😔', 
-          sender: 'bot',
-          isCompleted: true
-        }])
+        // Remove typing indicator and add error message
+        setMessages(prev => {
+          const newMessages = [...prev]
+          // Remove the typing indicator (last bot message with empty text)
+          const typingIndex = newMessages.findLastIndex(msg => msg.sender === 'bot' && msg.text === '')
+          if (typingIndex !== -1) {
+            newMessages.splice(typingIndex, 1)
+          }
+          // Add error message
+          return [...newMessages, { 
+            text: 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง 😔', 
+            sender: 'bot',
+            isCompleted: true
+          }]
+        })
+        setTimeout(scrollToBottom, 100)
       } finally {
         setIsLoading(false)
       }
@@ -366,13 +418,8 @@ const renderMessage = (msg: Message) => {
         )
       }
     } else {
-      return (
-        <div className="flex items-center space-x-1">
-          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-        </div>
-      )
+      // Show typing indicator for empty bot messages
+      return <TypingIndicator />
     }
   } else {
     // ข้อความผู้ใช้แสดงปกติ
@@ -407,11 +454,11 @@ const renderMessage = (msg: Message) => {
           }}
         >
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+            <div className="flex items-center justify-center w-8 h-8 bg-white rounded-full bg-opacity-20">
               🤖
             </div>
             <div>
-              <div className="font-medium text-sm">แชทบอท</div>
+              <div className="text-sm font-medium">แชทบอท</div>
               <div className="text-xs opacity-80">
                 {isLoading ? 'กำลังพิมพ์...' : 'ออนไลน์'}
                 </div>
@@ -420,7 +467,7 @@ const renderMessage = (msg: Message) => {
           
           <button
     onClick={() => setIsOpen(false)}
-    className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:bg-opacity-20"
+    className="flex items-center justify-center w-8 h-8 transition-all duration-200 rounded-full hover:bg-white hover:bg-opacity-20"
     style={{ 
       backgroundColor: 'rgba(255, 255, 255, 0.1)',
       color: '#ffffff'
@@ -434,7 +481,8 @@ const renderMessage = (msg: Message) => {
 
         {/* Messages */}
         <div 
-          className="flex-1 overflow-y-auto p-4 space-y-3"
+          ref={chatContainerRef}
+          className="flex-1 p-4 space-y-3 overflow-y-auto"
           style={{ 
             backgroundColor: settings.bgColor 
           }}
@@ -457,6 +505,7 @@ const renderMessage = (msg: Message) => {
               </div>
             </div>
           ))}
+          <div ref={messagesEndRef} />
         </div>
 
         {/* Input */}
@@ -466,9 +515,9 @@ const renderMessage = (msg: Message) => {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="พิมพ์ข้อความ..."
+              placeholder={isLoading ? "กำลังรอคำตอบ..." : "พิมพ์ข้อความ..."}
                disabled={isLoading}
-              className="flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none transition-all"
+              className="flex-1 px-3 py-2 text-sm transition-all border rounded-lg focus:outline-none"
               style={{ 
                 borderColor: '#e1e5e9'
               } as React.CSSProperties}
@@ -484,11 +533,11 @@ const renderMessage = (msg: Message) => {
             <button
                 type="submit"
                 disabled={!input.trim() || isLoading}
-                className="px-3 py-2 text-white rounded-lg transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-2 text-white transition-opacity rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ backgroundColor: settings.buttonColor }}
               >
                 {isLoading ? (
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
                 ) : (
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -533,11 +582,11 @@ return (
           }}
         >
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+            <div className="flex items-center justify-center w-8 h-8 bg-white rounded-full bg-opacity-20">
               🤖
             </div>
             <div>
-              <div className="font-medium text-sm">แชทบอท</div>
+              <div className="text-sm font-medium">แชทบอท</div>
               <div className="text-xs opacity-80">
               {isLoading ? 'กำลังพิมพ์...' : 'ออนไลน์'}
             </div>
@@ -549,7 +598,7 @@ return (
             <div className="relative">
               <button
                 onClick={() => setShowMenu(!showMenu)}
-                className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:bg-opacity-20"
+                className="flex items-center justify-center w-8 h-8 transition-all duration-200 rounded-full hover:bg-white hover:bg-opacity-20"
                 style={{ 
                   backgroundColor: 'rgba(255, 255, 255, 0.1)',
                   color: '#ffffff'
@@ -576,7 +625,7 @@ return (
                       window.open('/manual/manual.txt', '_blank')
                       setShowMenu(false)
                     }}
-                    className="w-full px-4 py-2 text-left text-sm bg-white hover:bg-gray-300 flex items-center space-x-2"
+                    className="flex items-center w-full px-4 py-2 space-x-2 text-sm text-left bg-white hover:bg-gray-300"
                     style={{ color: settings.textColor }}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -592,7 +641,7 @@ return (
                       window.open('/', '_blank')
                       setShowMenu(false)
                     }}
-                    className="w-full px-4 py-2 text-left text-sm bg-white hover:bg-gray-300 flex items-center space-x-2"
+                    className="flex items-center w-full px-4 py-2 space-x-2 text-sm text-left bg-white hover:bg-gray-300"
                     style={{ color: settings.textColor }}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -607,7 +656,7 @@ return (
             {/* ปุ่มปิด */}
             <button
               onClick={() => setIsOpen(false)}
-              className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-white hover:bg-opacity-20"
+              className="flex items-center justify-center w-8 h-8 transition-all duration-200 rounded-full hover:bg-white hover:bg-opacity-20"
               style={{ 
                 backgroundColor: 'rgba(255, 255, 255, 0.1)',
                 color: '#ffffff'
@@ -622,7 +671,7 @@ return (
 
         {/* Messages */}
         <div 
-          className="flex-1 overflow-y-auto p-4 space-y-3"
+          className="flex-1 p-4 space-y-3 overflow-y-auto"
           style={{ 
             height: `calc(${settings.height} - 140px)`,
             backgroundColor: settings.bgColor 
@@ -646,6 +695,7 @@ return (
               </div>
             </div>
           ))}
+          <div ref={messagesEndRef} />
         </div>
 
         {/* Input */}
@@ -655,8 +705,9 @@ return (
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="พิมพ์ข้อความ..."
-              className="flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none transition-all"
+              placeholder={isLoading ? "กำลังรอคำตอบ..." : "พิมพ์ข้อความ..."}
+              disabled={isLoading}
+              className="flex-1 px-3 py-2 text-sm transition-all border rounded-lg focus:outline-none"
               style={{ 
                 borderColor: '#e1e5e9'
               } as React.CSSProperties}
@@ -671,12 +722,17 @@ return (
             />
             <button
               type="submit"
-              className="px-3 py-2 text-white rounded-lg hover:opacity-90 transition-opacity"
+              disabled={!input.trim() || isLoading}
+              className="px-3 py-2 text-white transition-opacity rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ backgroundColor: settings.buttonColor }}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
+              {isLoading ? (
+                <div className="w-4 h-4 border-2 border-white rounded-full border-t-transparent animate-spin"></div>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+              )}
             </button>
           </div>
         </form>
@@ -686,7 +742,7 @@ return (
     {/* Float Button - อยู่ตำแหน่งเดิมตลอด */}
     <button
       onClick={() => setIsOpen(!isOpen)}
-      className="relative w-16 h-16 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110"
+      className="relative w-16 h-16 transition-all duration-300 transform rounded-full shadow-lg hover:shadow-xl hover:scale-110"
       style={{ 
         position: 'fixed',
         bottom: '20px',
@@ -711,7 +767,7 @@ return (
       {/* Badge แสดงจำนวนข้อความใหม่ */}
       {/* {!isOpen && messages.length > 1 && (
         <div 
-          className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold animate-pulse"
+          className="absolute flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full -top-2 -right-2 animate-pulse"
           style={{ backgroundColor: '#ef4444', color: '#ffffff' }}
         >
           {messages.length - 1}

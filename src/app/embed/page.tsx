@@ -24,7 +24,7 @@ export default function EmbedPage() {
     textColor: '#000000',
     buttonColor: '#007bff',
     borderRadius: '8',
-    dataSource: 'DOA-chat'  // ค่าเริ่มต้นเป็น 'DOA-chat'
+    dataSource: 'DOA-chat2'  // ค่าเริ่มต้นเป็น 'DOA-chat'
   })
   const [copied, setCopied] = useState(false)
 
@@ -79,27 +79,27 @@ export default function EmbedPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Header Section */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="bg-white border-b shadow-sm">
+        <div className="px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
           {/* Navigation */}
           <div className="flex items-center justify-between mb-6">
             <nav className="flex items-center space-x-4">
-              {/* <Link href="/" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+              {/* <Link href="/" className="px-3 py-2 text-gray-600 transition-colors rounded-lg hover:text-gray-900 hover:bg-gray-100">
                 หน้าแรก
               </Link> */}
-              <Link href="/protected" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+              <Link href="/protected" className="px-3 py-2 text-gray-600 transition-colors rounded-lg hover:text-gray-900 hover:bg-gray-100">
                 แชท
               </Link>
-              <span className="text-blue-600 font-medium px-3 py-2">
+              <span className="px-3 py-2 font-medium text-blue-600">
                 สร้างแชทบอท
               </span>
             </nav>
           </div>
           <div className="text-center">
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+            <h1 className="mb-3 text-3xl font-bold text-gray-900 sm:text-4xl">
               ปรับแต่งแชทบอทของคุณ
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="max-w-2xl mx-auto text-lg text-gray-600">
               สร้างและปรับแต่งแชทบอทให้เข้ากับแบรนด์ของคุณ พร้อมฝังในเว็บไซต์ได้ทันที
             </p>
           </div>
@@ -107,8 +107,8 @@ export default function EmbedPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
+      <div className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-3 lg:gap-8">
           {/* Form Section */}
           <div className="xl:col-span-1">
             <div className="sticky top-8">
@@ -120,10 +120,10 @@ export default function EmbedPage() {
           </div>
 
           {/* Preview & Code Section */}
-          <div className="xl:col-span-2 space-y-6">
+          <div className="space-y-6 xl:col-span-2">
             {/* Live Preview */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-              <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b">
+            <div className="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
+              <div className="px-6 py-4 border-b bg-gradient-to-r from-gray-50 to-gray-100">
                 <div className="flex items-center space-x-2">
                   <h3 className="text-lg font-semibold text-gray-800 ">
                     ตัวอย่างการแสดงผล
@@ -132,30 +132,30 @@ export default function EmbedPage() {
               </div>
               <div className="p-6">
                 <PreviewFrame settings={settings} />
-                <div className="mt-4 text-sm text-gray-500 text-center">
+                <div className="mt-4 text-sm text-center text-gray-500">
                   ขนาด: {settings.width} × {settings.height} พิกเซล
                 </div>
               </div>
             </div>
 
             {/* Embed Code Section */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 px-6 py-4 border-b">
-                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-                  <span className="text-xl mr-2">
+            <div className="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
+              <div className="px-6 py-4 border-b bg-gradient-to-r from-green-50 to-blue-50">
+                <h3 className="flex items-center text-lg font-semibold text-gray-800">
+                  <span className="mr-2 text-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
                     </svg>
                   </span>
                   โค้ดสำหรับฝังในเว็บไซต์
                 </h3>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="mt-1 text-sm text-gray-600">
                   คัดลอกโค้ดด้านล่างและวางในเว็บไซต์ของคุณ
                 </p>
               </div>
               <div className="p-6">
                 <div className="relative">
-                  <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto border">
+                  <pre className="p-4 overflow-x-auto text-sm text-gray-100 bg-gray-900 border rounded-lg">
                     <code className="language-html">{generateIframeCode()}</code>
                   </pre>
                   <button
@@ -179,10 +179,10 @@ export default function EmbedPage() {
                   </button>
                 </div>
 
-                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 mt-6 sm:grid-cols-2">
                   <button
                     onClick={copyIframeCode}
-                    className="flex items-center justify-center space-x-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md"
+                    className="flex items-center justify-center px-6 py-3 space-x-2 font-medium text-white transition-all duration-200 transform rounded-lg shadow-md bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 hover:scale-105"
                   >
                     <Copy size={18} />
                     <span>คัดลอกโค้ด</span>
@@ -202,7 +202,7 @@ export default function EmbedPage() {
                       }).toString()}`
                       window.open(url, '_blank')
                     }}
-                    className="flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md"
+                    className="flex items-center justify-center px-6 py-3 space-x-2 font-medium text-white transition-all duration-200 transform rounded-lg shadow-md bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:scale-105"
                   >
                     <Eye size={18} />
                     <span>ทดสอบ</span>
@@ -212,14 +212,14 @@ export default function EmbedPage() {
             </div>
 
             {/* Features Section */}
-            {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <span className="text-xl mr-2">✨</span>
+            {/* <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
+              <h3 className="flex items-center mb-4 text-lg font-semibold text-gray-800">
+                <span className="mr-2 text-xl">✨</span>
                 คุณสมบัติเด่น
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <div className="flex items-start space-x-3">
-                  <div className="bg-blue-100 text-blue-600 p-2 rounded-lg">
+                  <div className="p-2 text-blue-600 bg-blue-100 rounded-lg">
                     🎨
                   </div>
                   <div>
@@ -229,7 +229,7 @@ export default function EmbedPage() {
                 </div>
 
                 <div className="flex items-start space-x-3">
-                  <div className="bg-green-100 text-green-600 p-2 rounded-lg">
+                  <div className="p-2 text-green-600 bg-green-100 rounded-lg">
                     📱
                   </div>
                   <div>
@@ -239,7 +239,7 @@ export default function EmbedPage() {
                 </div>
 
                 <div className="flex items-start space-x-3">
-                  <div className="bg-purple-100 text-purple-600 p-2 rounded-lg">
+                  <div className="p-2 text-purple-600 bg-purple-100 rounded-lg">
                     ⚡
                   </div>
                   <div>
@@ -254,8 +254,8 @@ export default function EmbedPage() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-50 border-t mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <footer className="mt-16 border-t bg-gray-50">
+        <div className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div className="text-center text-gray-600">
             <p>ปรับแต่งแชทบอทและพร้อมฝังในเว็บไซต์ได้ทันที</p>
           </div>

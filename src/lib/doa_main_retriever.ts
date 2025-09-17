@@ -27,7 +27,7 @@ export async function getDOA_Main_Retriever() {
         queryName: 'match_main',
     });
 
-    const retriever = vectorStore.asRetriever({ k: 4 });
+    const retriever = vectorStore.asRetriever({ k: 2 });
 
     return retriever;
 
