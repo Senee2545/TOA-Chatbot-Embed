@@ -23,19 +23,13 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
   // ฐานข้อมูลที่มีให้เลือก
   const dataSources = [
     {
-      id: 'chat5',
-      name: 'ข้อมูลบุคลากร',
-      description: 'ข้อมูลพนักงาน ตำแหน่ง และแผนกต่างๆ',
-      icon: ''
-    },
-    {
       id: 'chat8',
       name: 'การออกกำลังกาย',
       description: 'ข้อมูลเกี่ยวกับการออกกำลังกาย และโภชนาการ',
       icon: ''
     },
     {
-      id: 'DOA-chat',
+      id: 'DOA-chat2',
       name: 'DOA',
       description: 'ข้อมูลเกี่ยวกับApproval',
       icon: ''
