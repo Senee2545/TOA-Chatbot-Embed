@@ -29,7 +29,7 @@ export default function EmbedPage() {
     borderRadius: '8',
     dataSource: 'DOA-chat2',  // ค่าเริ่มต้นเป็น 'DOA-chat2'
     botName: 'แชทบอท', //  ค่า default
-    botIcon: '🤖', //  ค่า default
+    botIcon: '/images/logo.png', //  ค่า default
   })
   const [copied, setCopied] = useState(false)
 
@@ -55,28 +55,24 @@ export default function EmbedPage() {
       botIcon: settings.botIcon,
     })
 
-    // 🔧 ใช้ขนาดตาม settings + เพิ่ม padding เล็กน้อย
-    const iframeWidth = parseInt(settings.width) + 40 // เพิ่ม 40px สำหรับ padding
-    const iframeHeight = parseInt(settings.height) + 100 // เพิ่ม 80px สำหรับ float button
-
     return `<iframe
-  src="${baseUrl}/chat-widget?${queryParams.toString()}"
-  style="
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: ${settings.width}px;
-    height: ${iframeHeight}px;
-    border: none;
-    background: transparent;
-    z-index: 9999;
-    pointer-events: auto;
-    border-radius: ${settings.borderRadius}px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-  "
-  title="Chatbot Widget">
-</iframe>`
-  }
+      id="chat-frame"
+      src="${baseUrl}/chat-widget?${queryParams.toString()}"
+      style={{
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        width: '${settings.width}px',
+        height: '${settings.height}px',
+        border: 'none',
+        background: 'transparent',
+        zIndex: '10',
+        pointerEvents: 'auto',
+        borderRadius: '${settings.borderRadius}px'
+      }}
+      title="Chatbot Widget"
+    />`
+    }
 
   const copyIframeCode = async () => {
     try {
@@ -225,7 +221,81 @@ export default function EmbedPage() {
                   </button>
                 </div>
               </div>
+              
             </div>
+
+            {/* 🆕 คู่มือการฝังโค้ด */}
+        <div className="p-6 border border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0">
+              <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-blue-600">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 1 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                </svg>
+              </div>
+            </div>
+            <div className="flex-1">
+              <h3 className="mb-2 text-lg font-semibold text-blue-900">
+                คู่มือการฝังแชทบอท
+              </h3>
+              <div className="space-y-4 text-sm text-blue-800">
+                
+                {/* วิธีการติดตั้ง */}
+                <div>
+                  <h4 className="flex items-center mb-2 font-medium">
+                    <span className="flex items-center justify-center w-5 h-5 mr-2 text-xs font-bold text-blue-700 bg-blue-200 rounded-full">1</span>
+                    วิธีการติดตั้ง
+                  </h4>
+                  <ul className="space-y-1 text-blue-700 ml-7">
+                    <li>• คัดลอกโค้ด iframe จากด้านลบนไปวางในหน้าเว็บของคุณ</li>
+                  </ul>
+                </div>
+
+                {/* ตัวอย่างการใช้งาน */}
+                <div>
+                  <h4 className="flex items-center mb-2 font-medium">
+                    <span className="flex items-center justify-center w-5 h-5 mr-2 text-xs font-bold text-blue-700 bg-blue-200 rounded-full">2</span>
+                    เพิ่มโค้ดควบคุมการเปิด–ปิดแชทบอท
+                  </h4>
+                  <div className="p-3 overflow-x-auto font-mono text-xs text-green-400 bg-gray-800 rounded-lg ml-7">
+                    <pre>{`useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'chatbot-visibility') {
+        const iframe = document.getElementById('chat-frame') as HTMLIFrameElement;
+        if (!iframe) return;
+
+        if (event.data.isOpen) {
+          // เปิดแชท → ขยาย iframe 
+          const src = iframe.getAttribute('src');
+          const params = new URLSearchParams(src?.split('?')[1]);
+          const width = params.get('width');
+          const height = params.get('height');
+
+          const widthNum = width ? parseInt(width.replace('px', '')) + 40 : 440;
+          const heightNum = height ? parseInt(height.replace('px', '')) + 100 : 700;
+
+          iframe.style.width = \`\${widthNum}px\`;
+          iframe.style.height = \`\${heightNum}px\`;
+        } else {
+          // ปิดแชท → ย่อ iframe ให้เหลือเท่าปุ่ม
+          iframe.style.width = '100px';
+          iframe.style.height = '100px';
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);`}</pre>
+                  </div>
+                </div>
+
+                
+              </div>
+            </div>
+          </div>
+        </div>
+
 
             {/* Features Section */}
             {/* <div className="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">

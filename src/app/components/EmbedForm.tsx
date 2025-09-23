@@ -152,18 +152,12 @@ const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
 // 🔧 Component แสดง Icon
 const BotIcon = ({ icon, className = "" }: { icon: string, className?: string }) => {
   const v = (icon || '').trim()
-  if (!v) return <span className={className}>🤖</span>
-
-  const mustBeImg = /^data:image\//i.test(v) || /^blob:/i.test(v)
-  if (mustBeImg || isImageUrl(v)) {
+  if (!v) {
     return (
       <img
-        src={v}
+        src="/images/logo.png"
         alt="Bot Icon"
         className={`${className} object-cover rounded-full`}
-        // crossOrigin ไม่จำเป็นสำหรับ blob/https ปกติ แต่ใส่ได้ถ้าอยากชัวร์:
-        crossOrigin="anonymous"
-        onLoad={() => setUploadProgress(null)}   // ✅ โหลดเสร็จ ปิด spinner
         onError={(e) => {
           const target = e.currentTarget
           target.style.display = 'none'
@@ -174,16 +168,54 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
       />
     )
   }
+
+  const mustBeImg = /^data:image\//i.test(v) || /^blob:/i.test(v)
+  if (mustBeImg || isImageUrl(v)) {
+    return (
+      <img
+        src={v}
+        alt="Bot Icon"
+        className={`${className} object-cover rounded-full`}
+        crossOrigin="anonymous"
+        onLoad={() => setUploadProgress(null)}  
+        onError={(e) => {
+          const target = e.currentTarget
+          target.style.display = 'none'
+          if (target.parentElement) {
+            target.parentElement.innerHTML = '<img src="/images/logo.png" alt="Bot Icon" class="' + className + ' object-cover rounded-full" onerror="this.outerHTML=\'<span class=\\"text-2xl\\">🤖</span>\'">'
+          }
+        }}
+      />
+    )
+  }
+   // ถ้า v เป็น path รูป ให้แสดงเป็นรูป
+  if (v.startsWith('/') || v.startsWith('http')) {
+    return (
+      <img
+        src={v}
+        alt="Bot Icon"
+        className={`${className} object-cover rounded-full`}
+        onError={(e) => {
+          const target = e.currentTarget
+          target.style.display = 'none'
+          if (target.parentElement) {
+            target.parentElement.innerHTML = '<span class="text-2xl">🤖</span>'
+          }
+        }}
+      />
+    )
+  }
+
   return <span className={className}>{v || '🤖'}</span>
 }
 
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 px-6 py-4 border-b">
-        <h2 className="text-xl font-semibold text-gray-800 flex items-center">
-          <span className="text-2xl mr-2">
+      <div className="px-6 py-4 border-b bg-gradient-to-r from-blue-50 to-purple-50">
+        <h2 className="flex items-center text-xl font-semibold text-gray-800">
+          <span className="mr-2 text-2xl">
             {/* Setting Icon */}
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
@@ -191,7 +223,7 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
           </span>
           การตั้งค่า
         </h2>
-        <p className="text-sm text-gray-600 mt-1">
+        <p className="mt-1 text-sm text-gray-600">
           ปรับแต่งรูปแบบแชทบอทของคุณ
         </p>
       </div>
@@ -201,14 +233,14 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
 
             {/* ชื่อแชทบอท */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-2">
+              <label className="block mb-2 text-xs font-medium text-gray-500">
                 ชื่อแชทบอท
               </label>
               <input
                 type="text"
                 value={settings.botName}
                 onChange={(e) => handleChange('botName', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-3 py-2 transition-all border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="ชื่อแชทบอทของคุณ"
               />
             </div>
@@ -217,13 +249,13 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
 
 
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-2">
+              <label className="block mb-2 text-xs font-medium text-gray-500">
                 ไอคอนแชทบอท
               </label>
               
               {/* พรีวิว Icon */}
-          <div className="flex items-center space-x-3 mb-3">
-            <div className="flex items-center justify-center w-12 h-12 bg-white border border-gray-300 rounded-lg overflow-hidden">
+          <div className="flex items-center mb-3 space-x-3">
+            <div className="flex items-center justify-center w-12 h-12 overflow-hidden bg-white border border-gray-300 rounded-lg">
               <BotIcon 
         icon={settings.botIcon} 
         className={isImageUrl(settings.botIcon || '') ? "w-full h-full object-cover" : "text-lg"}
@@ -252,17 +284,17 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
               />
               <label
                 htmlFor="iconUpload"
-                className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all duration-200"
+                className="flex items-center justify-center w-full px-4 py-3 transition-all duration-200 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50"
               >
                 <div className="text-center">
                   {uploadProgress !== null ? (
                     <div className="space-y-2">
-                      <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                      <div className="w-6 h-6 mx-auto border-2 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
                       <div className="text-xs text-blue-600">กำลังอัปโหลด {Math.round(uploadProgress)}%</div>
                     </div>
                   ) : (
                     <div className="space-y-1">
-                      <svg className="w-8 h-8 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-8 h-8 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                       </svg>
                       <div className="text-sm text-gray-600">คลิกเพื่อเลือกรูป</div>
@@ -274,7 +306,7 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
             </div>
             {/* Upload Error */}
             {uploadError && (
-              <div className="flex items-center space-x-2 text-red-600 bg-red-50 px-3 py-2 rounded-lg">
+              <div className="flex items-center px-3 py-2 space-x-2 text-red-600 rounded-lg bg-red-50">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
@@ -288,7 +320,7 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
                 <div className="w-full border-t border-gray-300"></div>
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="bg-white px-2 text-gray-500">Preview</span>
+                <span className="px-2 text-gray-500 bg-white">Preview</span>
               </div>
             </div>
 
@@ -298,11 +330,11 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
 
 
 {/* พรีวิวแชทบอท */}
-<div className="border border-gray-200 rounded-lg p-3 bg-white">
-  <p className="text-xs font-medium text-gray-500 mb-2">Header:</p>
+<div className="p-3 bg-white border border-gray-200 rounded-lg">
+  <p className="mb-2 text-xs font-medium text-gray-500">Header:</p>
   <div className="flex items-center space-x-3">
     <div 
-      className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden"
+      className="flex items-center justify-center w-10 h-10 overflow-hidden rounded-full"
       style={{ 
         backgroundColor: settings.buttonColor + '20', 
         color: settings.buttonColor,
@@ -315,7 +347,7 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
       />
     </div>
     <div>
-      <div className="font-medium text-sm" style={{ color: settings.textColor }}>
+      <div className="text-sm font-medium" style={{ color: settings.textColor }}>
         {settings.botName || 'แชทบอท'}
       </div>
     </div>
@@ -327,8 +359,8 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
 
         {/* เพิ่มส่วนเลือกฐานข้อมูล */}
         <div>
-          <label className="flex items-center text-sm font-medium text-gray-700 mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 mr-2">
+          <label className="flex items-center mb-3 text-sm font-medium text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mr-2 size-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
             </svg>
             เลือกฐานข้อมูล
@@ -355,12 +387,12 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
                     <span className="text-lg">{source.icon}</span>
                     <span className="font-medium text-gray-900">{source.name}</span>
                     {settings.dataSource === source.id && (
-                      <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                      <span className="px-2 py-1 text-xs text-white bg-blue-500 rounded-full">
                         เลือกแล้ว
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <p className="mt-1 text-sm text-gray-600">
                     {source.description}
                   </p>
                 </div>
@@ -371,31 +403,31 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
 
         {/* Color Presets */}
         <div>
-          <label className="flex items-center text-sm font-medium text-gray-700 mb-3 ">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 mr-2">
+          <label className="flex items-center mb-3 text-sm font-medium text-gray-700 ">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mr-2 size-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
             </svg>
             ธีมสีสำเร็จรูป
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
             {presetColors.map((preset) => (
               <button
                 key={preset.name}
                 onClick={() => applyPreset(preset)}
-                className="group relative p-2 rounded-lg border-2 border-gray-200 hover:border-gray-300 transition-all duration-200 hover:scale-105 bg-white hover:bg-gray-50"
+                className="relative p-2 transition-all duration-200 bg-white border-2 border-gray-200 rounded-lg group hover:border-gray-300 hover:scale-105 hover:bg-gray-50"
                 title={`ธีม ${preset.name}`}
               >
                 <div className="flex items-center space-x-1">
                   <div
-                    className="w-4 h-4 rounded border"
+                    className="w-4 h-4 border rounded"
                     style={{ backgroundColor: preset.bg }}
                   />
                   <div
-                    className="w-4 h-4 rounded border"
+                    className="w-4 h-4 border rounded"
                     style={{ backgroundColor: preset.button }}
                   />
                 </div>
-                <div className="text-xs text-gray-600 mt-1 group-hover:text-gray-800">
+                <div className="mt-1 text-xs text-gray-600 group-hover:text-gray-800">
                   {preset.name}
                 </div>
               </button>
@@ -405,36 +437,36 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
 
         {/* ขนาด */}
         <div>
-          <label className="flex items-center text-sm font-medium text-gray-700 mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 mr-2">
+          <label className="flex items-center mb-3 text-sm font-medium text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mr-2 size-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6A1.125 1.125 0 0 1 2.25 10.875v-3.75ZM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-8.25ZM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25A1.125 1.125 0 0 1 3.75 18.375v-2.25Z" />
             </svg>
             ขนาด
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-2">
+              <label className="block mb-2 text-xs font-medium text-gray-500">
                 ความกว้าง (px)
               </label>
               <input
                 type="number"
                 value={settings.width}
                 onChange={(e) => handleChange('width', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-3 py-2 transition-all border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 min="200"
                 max="800"
                 placeholder="400"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-2">
+              <label className="block mb-2 text-xs font-medium text-gray-500">
                 ความสูง (px)
               </label>
               <input
                 type="number"
                 value={settings.height}
                 onChange={(e) => handleChange('height', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-3 py-2 transition-all border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 min="300"
                 max="800"
                 placeholder="600"
@@ -445,8 +477,8 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
 
         {/* สี */}
         <div>
-          <label className="flex items-center text-sm font-medium text-gray-700 mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 mr-2">
+          <label className="flex items-center mb-3 text-sm font-medium text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mr-2 size-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
             </svg>
             สีและธีม
@@ -454,7 +486,7 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
           <div className="space-y-4">
             {/* สีพื้นหลัง */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-2">
+              <label className="block mb-2 text-xs font-medium text-gray-500">
                 สีพื้นหลัง
               </label>
               <div className="flex items-center space-x-3">
@@ -476,7 +508,7 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
 
             {/* สีข้อความ */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-2">
+              <label className="block mb-2 text-xs font-medium text-gray-500">
                 สีข้อความ
               </label>
               <div className="flex items-center space-x-3">
@@ -498,7 +530,7 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
 
             {/* สีปุ่ม */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-2">
+              <label className="block mb-2 text-xs font-medium text-gray-500">
                 สีปุ่ม
               </label>
               <div className="flex items-center space-x-3">
@@ -522,8 +554,8 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
 
         {/* มุมโค้ง */}
         <div>
-          <label className="flex items-center text-sm font-medium text-gray-700 mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 mr-2">
+          <label className="flex items-center mb-3 text-sm font-medium text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="mr-2 size-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
             </svg>
             มุมโค้ง
@@ -545,6 +577,7 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
               <span>มน</span>
             </div>
           </div>
+          
         </div>
 
         {/* Save Button */}
@@ -557,6 +590,10 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
         >
           {saved ? '✅ บันทึกเรียบร้อย' : '💾 บันทึกการตั้งค่า'}
         </button> */}
+
+        
+
+        
       </div>
     </div>
   )

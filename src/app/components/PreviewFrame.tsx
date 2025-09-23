@@ -32,7 +32,7 @@ export default function PreviewFrame({ settings }: PreviewFrameProps) {
       position: 'center', // สำหรับ preview ให้อยู่กลาง
       dataSource: settings.dataSource,
       botName: settings.botName,
-      botIcon: settings.botIcon || '🤖',  
+      botIcon: settings.botIcon || '/images/logo.png',  
     })
 
     return `/chat-widget?${queryParams.toString()}`
@@ -49,7 +49,7 @@ export default function PreviewFrame({ settings }: PreviewFrameProps) {
       position: 'bottom-right', // สำหรับ embed จริงให้อยู่มุมขวาล่าง
       dataSource: settings.dataSource,
       botName: settings.botName,
-      botIcon: settings.botIcon || '🤖',
+      botIcon: settings.botIcon || '/images/logo.png',
     })
 
     return `/chat-widget?${queryParams.toString()}`
@@ -86,7 +86,7 @@ export default function PreviewFrame({ settings }: PreviewFrameProps) {
           <div className="flex items-center space-x-2">
             <button
               onClick={openFullscreen}
-              className="p-2 text-gray-500 hover:text-gray-700 bg-white hover:bg-gray-100 border-2 border-gray-200 rounded-lg transition-all"
+              className="p-2 text-gray-500 transition-all bg-white border-2 border-gray-200 rounded-lg hover:text-gray-700 hover:bg-gray-100"
               title="ขยายเต็มจอ"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,7 +95,7 @@ export default function PreviewFrame({ settings }: PreviewFrameProps) {
             </button>
             <button
               onClick={openInNewTab}
-              className="p-2 text-gray-500 hover:text-gray-700  bg-white hover:bg-gray-100 border-2 border-gray-200 rounded-lg transition-all"
+              className="p-2 text-gray-500 transition-all bg-white border-2 border-gray-200 rounded-lg hover:text-gray-700 hover:bg-gray-100"
               title="เปิดในแท็บใหม่"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,9 +106,9 @@ export default function PreviewFrame({ settings }: PreviewFrameProps) {
         </div>
 
         {/* Clean Preview Container */}
-        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden border border-gray-200">
+        <div className="overflow-hidden border border-gray-200 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl">
           {/* Browser Mockup Header */}
-          <div className="bg-white px-4 py-3 flex items-center space-x-2 border-b border-gray-200">
+          <div className="flex items-center px-4 py-3 space-x-2 bg-white border-b border-gray-200">
             <div className="flex space-x-1.5">
               <div className="w-3 h-3 bg-red-400 rounded-full"></div>
               <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
@@ -152,8 +152,8 @@ export default function PreviewFrame({ settings }: PreviewFrameProps) {
           </div>
 
           {/* Preview Info */}
-          <div className="bg-white px-4 py-3 border-t border-gray-200">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+          <div className="px-4 py-3 bg-white border-t border-gray-200">
+            <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
               <div className="text-sm text-gray-600">
                 <span className="inline-flex items-center space-x-1">
                   <span>📏</span>
@@ -168,14 +168,14 @@ export default function PreviewFrame({ settings }: PreviewFrameProps) {
               <div className="flex items-center space-x-3 text-xs">
                 <div className="flex items-center space-x-1">
                   <div 
-                    className="w-3 h-3 rounded border shadow-sm"
+                    className="w-3 h-3 border rounded shadow-sm"
                     style={{ backgroundColor: settings.bgColor }}
                   />
                   <span className="text-gray-500">พื้นหลัง</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <div 
-                    className="w-3 h-3 rounded border shadow-sm"
+                    className="w-3 h-3 border rounded shadow-sm"
                     style={{ backgroundColor: settings.buttonColor }}
                   />
                   <span className="text-gray-500">ปุ่ม</span>
@@ -192,11 +192,11 @@ export default function PreviewFrame({ settings }: PreviewFrameProps) {
 
       {/* Fullscreen Modal */}
       {isFullscreen && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-80">
           <div className="relative max-w-full max-h-full">
             <button
               onClick={closeFullscreen}
-              className="absolute -top-16 right-0 text-black hover:text-gray-300 transition-colors z-10 bg-white hover:bg-gray-100 rounded-full p-2 shadow-lg"
+              className="absolute right-0 z-10 p-2 text-black transition-colors bg-white rounded-full shadow-lg -top-16 hover:text-gray-300 hover:bg-gray-100"
             >
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

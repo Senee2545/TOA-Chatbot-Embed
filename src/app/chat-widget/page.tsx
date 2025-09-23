@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
@@ -28,18 +29,13 @@ interface ChatSettings {
 // BotIcon component 
 const BotIcon = ({ icon, className = "" }: { icon: string, className?: string }) => {
   const v = (icon || '').trim()
-  if (!v) return <span className={`${className} flex items-center justify-center`}>🤖</span>
-
-  const mustBeImg = /^data:image\//i.test(v) || /^blob:/i.test(v)
-  if (mustBeImg || /^https?:\/\/.+/i.test(v)) { 
+  if (!v) {
     return (
       <div className={`${className} flex items-center justify-center overflow-hidden`}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={v}
+          src="/images/logo.png"
           alt="Bot Icon"
-          className="w-full h-full object-cover rounded-full"
-          crossOrigin="anonymous"
+          className="object-cover w-full h-full rounded-full"
           onError={(e) => {
             const target = e.currentTarget
             target.style.display = 'none'
@@ -51,6 +47,47 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
       </div>
     )
   }
+  const mustBeImg = /^data:image\//i.test(v) || /^blob:/i.test(v)
+  if (mustBeImg || /^https?:\/\/.+/i.test(v)) { 
+    return (
+      <div className={`${className} flex items-center justify-center overflow-hidden`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={v}
+          alt="Bot Icon"
+          className="object-cover w-full h-full rounded-full"
+          crossOrigin="anonymous"
+          onError={(e) => {
+            const target = e.currentTarget
+            target.style.display = 'none'
+            if (target.parentElement) {
+              target.parentElement.innerHTML = '<img src="/images/logo.png" alt="Bot Icon" class="object-cover w-full h-full rounded-full" onerror="this.outerHTML=\'<span class=\\"flex items-center justify-center text-2xl\\">🤖</span>\'">'
+            }
+          }}
+        />
+      </div>
+    )
+  }
+  // ถ้า v เป็น path รูป ให้แสดงเป็นรูป
+  if (v.startsWith('/') || v.startsWith('http')) {
+    return (
+      <div className={`${className} flex items-center justify-center overflow-hidden`}>
+        <img
+          src={v}
+          alt="Bot Icon"
+          className="object-cover w-full h-full rounded-full"
+          onError={(e) => {
+            const target = e.currentTarget
+            target.style.display = 'none'
+            if (target.parentElement) {
+              target.parentElement.innerHTML = '<img src="/images/logo.png" alt="Bot Icon" class="object-cover w-full h-full rounded-full" onerror="this.outerHTML=\'<span class=\\"flex items-center justify-center text-2xl\\">🤖</span>\'">'
+            }
+          }}
+        />
+      </div>
+    )
+  }
+  
   return <span className={`${className} flex items-center justify-center text-lg`}>{v || '🤖'}</span>
 }
 
@@ -118,7 +155,7 @@ export default function ChatWidget() {
     dataSource: '',
     //
     botName: 'แชทบอท',
-    botIcon: '🤖',
+    botIcon: '/images/logo.png',
   })
 
 
@@ -157,7 +194,7 @@ useEffect(() => {
       dataSource: params.get('dataSource') || '',
       //
       botName: params.get('botName') || 'แชทบอท',
-      botIcon: params.get('botIcon') || '🤖',
+      botIcon: params.get('botIcon') || '/images/logo.png',
     }
     
     setSettings(newSettings)
@@ -276,6 +313,8 @@ useEffect(() => {
     }
   })()
 }, [isOpen, settings.position, settings.dataSource, sessionId])
+
+
 
 
 
@@ -462,6 +501,14 @@ const renderMessage = (msg: Message) => {
 
 
 
+useEffect(() => {
+  if (typeof window !== 'undefined') {
+    window.parent.postMessage(
+      { type: 'chatbot-visibility', isOpen },
+      '*'
+    )
+  }
+}, [isOpen])
 
 
   // สำหรับ Preview Mode (center)
@@ -592,8 +639,10 @@ const renderMessage = (msg: Message) => {
   // สำหรับ Embed Mode (bottom-right)
   // ในส่วน Embed Mode (bottom-right) แก้เป็น:
 
+
 return (
-  <div style={{ background: 'transparent' }}>
+  
+    <>
     {/* Chat Widget - แสดงเมื่อเปิด */}
     {isOpen && (
       <div
@@ -608,8 +657,9 @@ return (
           boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
           fontFamily: 'system-ui, -apple-system, sans-serif',
           overflow: 'hidden',
-          zIndex: 1001,
-          transition: 'all 0.3s ease'
+          zIndex: 1,
+          transition: 'all 0.3s ease',
+          pointerEvents: 'auto' 
         }}
       >
         {/* Header */}
@@ -659,7 +709,7 @@ return (
               {showMenu && (
                 <div 
                   className="absolute top-10 right-0 bg-white rounded-lg shadow-lg py-2 z-50 min-w-[180px]"
-                  style={{ border: '1px solid #e1e5e9' }}
+                  style={{ border: '1px solid #e1e5e9', zIndex: 2, pointerEvents: 'auto' }}
                 >
                   {/* คู่มือการใช้งาน */}
                   <button
@@ -789,9 +839,10 @@ return (
         position: 'fixed',
         bottom: '20px',
         right: '20px',
-        zIndex: 1002,
+        zIndex: 3,
         backgroundColor: settings.buttonColor,
-        color: '#ffffff'
+        color: '#ffffff',
+        pointerEvents: 'auto'
       }}
     >
       <div className="flex items-center justify-center">
@@ -816,6 +867,6 @@ return (
         </div>
       )} */}
     </button>
-  </div>
+  </>
 )
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client' 
 
 import { useState, useRef, useEffect } from 'react'
@@ -222,7 +223,18 @@ export default function ChatPage(props: userProps) {
             <div className="flex items-center space-x-4">
               {/* Logo */}
               <div className="flex items-center justify-center w-10 h-10 text-white rounded-full bg-gradient-to-r from-blue-500 to-purple-600">
-                🤖
+                <img
+                  src="/images/logo.png"
+                  alt="Bot Icon"
+                  className="object-cover w-full h-full rounded-full"
+                  onError={(e) => {
+                    const target = e.currentTarget
+                    target.style.display = 'none'
+                    if (target.parentElement) {
+                      target.parentElement.innerHTML = '<span class="flex items-center justify-center text-lg">🤖</span>'
+                    }
+                  }}
+                />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">แชทบอท AI</h1>
@@ -326,7 +338,18 @@ export default function ChatPage(props: userProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="p-2 text-lg text-white rounded-full bg-gradient-to-r from-blue-500 to-purple-600">
-                🤖
+                <img
+                  src="/images/logo.png"
+                  alt="Bot Icon"
+                  className="object-cover w-6 h-6 rounded-full"
+                  onError={(e) => {
+                    const target = e.currentTarget
+                    target.style.display = 'none'
+                    if (target.parentElement) {
+                      target.parentElement.innerHTML = '🤖'
+                    }
+                  }}
+                />
               </div>
               <div>
                 <h1 className="text-lg font-bold text-gray-900">แชทบอท AI</h1>
@@ -418,7 +441,18 @@ export default function ChatPage(props: userProps) {
           <div className="hidden px-6 py-4 border-b md:block bg-gradient-to-r from-blue-50 to-purple-50 shrink-0">
             <div className="flex items-center space-x-3">
               <div className="flex items-center justify-center w-10 h-10 text-white rounded-full bg-gradient-to-r from-blue-500 to-purple-600">
-                🤖
+                <img
+                  src="/images/logo.png"
+                  alt="Bot Icon"
+                  className="object-cover w-full h-full rounded-full"
+                  onError={(e) => {
+                    const target = e.currentTarget
+                    target.style.display = 'none'
+                    if (target.parentElement) {
+                      target.parentElement.innerHTML = '<span class="flex items-center justify-center text-lg">🤖</span>'
+                    }
+                  }}
+                />
               </div>
               <div>
                 <h2 className="text-lg font-semibold text-gray-800">แชทบอท AI</h2>
@@ -443,7 +477,20 @@ export default function ChatPage(props: userProps) {
                     ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-sm'
                     : 'bg-gray-200 text-gray-600'
                     }`}>
-                    {msg.sender === 'user' ? (props.email?.charAt(0)?.toUpperCase() ?? '') : '🤖'}
+                    {msg.sender === 'user' ? (props.email?.charAt(0)?.toUpperCase() ?? '') : (
+                      <img
+                  src="/images/logo.png"
+                  alt="Bot Icon"
+                  className="object-cover w-full h-full rounded-full"
+                  onError={(e) => {
+                    const target = e.currentTarget
+                    target.style.display = 'none'
+                    if (target.parentElement) {
+                      target.parentElement.innerHTML = '<span class="flex items-center justify-center text-lg">🤖</span>'
+                    }
+                  }}
+                />
+                    )}
                   </div>
                   <div
                     className={`px-3 md:px-4 py-2 md:py-3 rounded-lg transition-all duration-200 hover:shadow-md text-sm md:text-base ${msg.sender === 'user'
