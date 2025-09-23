@@ -111,7 +111,6 @@ export async function GET() {
                     const category = getValueInsensitive(row, ["category"]);
                     const group = getValueInsensitive(row, ["group"]);
                     const subGroup = getValueInsensitive(row, ["sub group"]);
-                    const description = getValueInsensitive(row, ["Description"]);
                     
 
                     let businessActivity = "";
@@ -126,26 +125,9 @@ export async function GET() {
                     }
 
                     const pageContent = `
-                        No.: ${no || "-"}
-                        Category: ${category || "-"}
+                        หัวข้อ: ${no || "-"}
                         Business Activity: ${businessActivity || "-"}
                         ${groupLine}
-                        ${description || ""}
-
-                        รายละเอียดการอนุมัติ:
-                        - BoD: ${getValueInsensitive(row, ["BoD"]) || "ไม่ระบุ"}
-                        - EX COM: ${getValueInsensitive(row, ["EX COM"]) || "ไม่ระบุ"}
-                        - CEO: ${getValueInsensitive(row, ["CEO"]) || "ไม่ระบุ"}
-                        - EVP: ${getValueInsensitive(row, ["EVP"]) || "ไม่ระบุ"}
-                        - SVP: ${getValueInsensitive(row, ["SVP"]) || "ไม่ระบุ"}
-                        - Div. Head: ${getValueInsensitive(row, ["Div. Head"]) || "ไม่ระบุ"}
-                        - SGH (Sales only): ${getValueInsensitive(row, ["SGH\r\n(Sales only)"]) || "ไม่ระบุ"}
-                        - Dept. Head: ${getValueInsensitive(row, ["Dept. Head"]) || "ไม่ระบุ"}
-
-                        การอนุมัติร่วม: ${getValueInsensitive(row, ["Co Approval"]) || "ไม่มี"}
-                        หมายเหตุ: ${getValueInsensitive(row, ["Remarks"]) || "ไม่มี"}
-                        ลิงก์แบบฟอร์ม: ${getValueInsensitive(row, ["Form URL"]) || "-"}
-                        หมายเหตุเพิ่มเติม: ${getValueInsensitive(row, ["Note"]) || "-"}
                         `.trim();
 
                     //metadata 
@@ -157,7 +139,20 @@ export async function GET() {
                         group: group,
                         "sub group": subGroup,
                         "Category": category,
-                    
+                        "approval_details": {
+                            "BoD": getValueInsensitive(row, ["BoD"]) || "ไม่ระบุ",
+                            "EX_COM": getValueInsensitive(row, ["EX COM"]) || "ไม่ระบุ",
+                            "CEO": getValueInsensitive(row, ["CEO"]) || "ไม่ระบุ",
+                            "EVP": getValueInsensitive(row, ["EVP"]) || "ไม่ระบุ",
+                            "SVP": getValueInsensitive(row, ["SVP"]) || "ไม่ระบุ",
+                            "Div_Head": getValueInsensitive(row, ["Div. Head"]) || "ไม่ระบุ",
+                            "SGH_Sales": getValueInsensitive(row, ["SGH\r\n(Sales only)"]) || "ไม่ระบุ",
+                            "Dept_Head": getValueInsensitive(row, ["Dept. Head"]) || "ไม่ระบุ"
+                        },
+                        "co_approval": getValueInsensitive(row, ["Co Approval"]) || "ไม่มี",
+                        "remarks": getValueInsensitive(row, ["Remarks"]) || "ไม่มี",
+                        "form_url": getValueInsensitive(row, ["Form URL"]) || "-",
+                        "note": getValueInsensitive(row, ["Note"]) || "-"
                     };
 
                     return new Document<Record<string, any>>({

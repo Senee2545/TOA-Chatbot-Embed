@@ -40,6 +40,8 @@ const BodySchema = z.object({
   messages: z
     .array(
       z.object({
+
+
         role: z.enum(["user", "assistant", "system"]).optional(),
         content: z.string(),
       })
@@ -107,6 +109,37 @@ function getHistory(sessionId: string) {
   });
 }
 
+// เพิ่มชุดคำพ้อง (synonyms) ที่ต้องการ
+const SYNONYM_SETS = [
+  {
+    triggers: ["อบรม", "ฝึกอบรม", "การอบรม", "การฝึกอบรม", "training", "l&d"],
+    expand: [
+      "training",
+      "training expenses",
+    ],
+  },
+   {
+    triggers: ["เบี้ยเลี้ยง","ค่าที่พัก","ค่าเดินทาง","per diem","reimbursement"],
+    expand: [
+      "Reimbursement for Per Diem",
+      "Lodging and Travelling expenses",
+    ],
+  },
+];
+
+// ฟังก์ชันขยายคำถามด้วย synonyms
+function expandWithSynonyms(q: string) {
+  const lc = (q ?? "").toLowerCase();
+  const bag = new Set<string>();
+  for (const set of SYNONYM_SETS) {
+    if (set.triggers.some((t) => lc.includes(t))) {
+      set.expand.forEach((e) => bag.add(e));
+    }
+  }
+  if (bag.size === 0) return q;
+  return `${q} ${Array.from(bag).join(" ")}`;
+}
+
 /** =========================
  *  3) Route Handler
  *  ========================= */
@@ -157,53 +190,123 @@ export async function POST(req: NextRequest) {
 
     const lastUserMessage = messages[messages.length - 1]?.content ?? "";
 
+    const expandedQuestion = expandWithSynonyms(lastUserMessage);
+    if (expandedQuestion !== lastUserMessage) {
+      console.log("Expanded with synonyms:", expandedQuestion);
+    }
+    console.log("Expanded with synonyms:", expandedQuestion);
+
     /** 3.4 RAG: ดึง context (ลด await ซ้ำ ๆ, ทำงานขนาน) */
     const [doaRetriever, doaMainRetriever] = await Promise.all([
       getDOARetriever(),
       getDOA_Main_Retriever(),
     ]);
 
+
     // เรียก parallel
     const [docs, mainDocs] = await Promise.all([
-      doaRetriever.invoke(lastUserMessage),
-      doaMainRetriever.invoke(lastUserMessage),
+      doaRetriever.invoke(expandedQuestion),
+      doaMainRetriever.invoke(expandedQuestion),
     ]);
+    console.log("🔍 Retrieved docs:", docs);
+    console.log("🔍 Retrieved main docs:", mainDocs);
+    
 
-    // สร้าง context (sanitize + clamp)
-    const ctxDetail = sanitizeCurlyBraces(
-      clampText(docs.map(d => d.pageContent).join("\n\n"), 12_000) // ~12k chars
-    );
+    // 🔧 สร้าง context ที่รวม content + metadata แต่ละ doc
+    const processedDocs = docs.slice(0, 5).map(doc => ({
+      content: sanitizeCurlyBraces(clampText(doc.pageContent, 2000)),
+      metadata: {
+        no: doc.metadata["No."] || "",
+        category: doc.metadata["Category"] || "",
+        businessActivity: doc.metadata["Business Activity"] || "",
+        group: doc.metadata["group"] || "",
+        remarks: doc.metadata["remarks"] || "",
+        formUrl: doc.metadata["form_url"] || "",
+        coApproval: doc.metadata["co_approval"] || "",
+        approvalDetails: doc.metadata["approval_details"] || {},
+        subGroup: doc.metadata["sub group"] || "",
+        note: doc.metadata["note"] || ""
+      }
+    }));
+
+
+    // 🔧 สร้าง detailed context ที่ content + metadata อยู่ด้วยกัน
+    const ctxDetail = processedDocs.map(doc => {
+      let contextText = `--- เอกสารที่ ${doc.metadata.no} ---\n`;
+      contextText += `หมวด: ${doc.metadata.category}\n`;
+      contextText += `กิจกรรม: ${doc.metadata.businessActivity}\n`;
+      contextText += `กลุ่ม: ${doc.metadata.group}\n`;
+      
+      // แสดงสิทธิการอนุมัติ
+      if (doc.metadata.approvalDetails && Object.keys(doc.metadata.approvalDetails).length > 0) {
+        contextText += `\nสิทธิการอนุมัติ:\n`;
+        Object.entries(doc.metadata.approvalDetails).forEach(([position, authority]) => {
+          if (authority && authority !== "ไม่ระบุ" && authority.toString().trim() !== "") {
+            contextText += `• ${position}: ${authority}\n`;
+          }
+        });
+      }
+      
+      // ข้อมูลเพิ่มเติม
+      if (doc.metadata.coApproval && doc.metadata.coApproval !== "ไม่มี") {
+        contextText += `Co Approval: ${doc.metadata.coApproval}\n`;
+      }
+      if (doc.metadata.remarks && doc.metadata.remarks !== "ไม่มี" && doc.metadata.remarks !== "-") {
+        contextText += `หมายเหตุ: ${doc.metadata.remarks}\n`;
+      }
+      if (doc.metadata.formUrl && doc.metadata.formUrl !== "-" && doc.metadata.formUrl !== "ไม่มี") {
+        contextText += `Form URL: ${doc.metadata.formUrl}\n`;
+      }
+      if (doc.metadata.note && doc.metadata.note !== "-" && doc.metadata.note !== "ไม่มี") {
+        contextText += `Note: ${doc.metadata.note}\n`;
+      }
+      
+      contextText += `\nรายละเอียด: ${doc.content}\n`;
+      return contextText;
+    }).join("\n\n");
+
+    // Main context (ภาพรวม)
     const ctxMain = sanitizeCurlyBraces(
       clampText(mainDocs.map(d => d.pageContent).join("\n\n"), 8_000)
     );
 
+    // Sanitize final context
+    const finalCtxDetail = sanitizeCurlyBraces(clampText(ctxDetail, 12_000));
+
     // ลด noisy log + ไม่ log เนื้อหา (ป้องกันข้อมูลอ่อนไหว)
-    if (process.env.NODE_ENV !== "production") {
-      console.log("🔑 sessionId:", sessionId);
-      console.log("🔎 query:", lastUserMessage.slice(0, 200));
-      console.log("📄 ctxDetailLen:", ctxDetail.length, "ctxMainLen:", ctxMain.length);
-    }
+    // if (process.env.NODE_ENV !== "production") {
+    //   console.log("🔑 sessionId:", sessionId);
+    //   console.log("🔎 query:", lastUserMessage.slice(0, 200));
+    //   console.log("📄 ctxDetailLen:", finalCtxDetail.length, "ctxMainLen:", ctxMain.length);
+    //   console.log("📋 processedDocs count:", processedDocs.length);
+    //   console.log("🔍 sample doc metadata:", processedDocs[0]?.metadata?.no ? {
+    //     no: processedDocs[0].metadata.no,
+    //     category: processedDocs[0].metadata.category.substring(0, 50)
+    //   } : "No metadata");
+    // }
 
     /** 3.5 Prompt */
     const SYSTEM_PROMPT = `
 คุณคือ AI Chatbot ผู้เชี่ยวชาญด้านนโยบายและขั้นตอนการอนุมัติ (DOA Cash)  
+
 คุณมีข้อมูล 2 ชุดเพื่อใช้ในการตอบคำถาม:  
 - ชุดที่ 1 = ข้อมูลหัวข้อหลัก/ภาพรวม: ${ctxMain}  
-- ชุดที่ 2 = ข้อมูลรายละเอียดของหัวข้อ: ${ctxDetail}  
+- ชุดที่ 2 = ข้อมูลรายละเอียด (รวม metadata ในแต่ละเอกสาร): ${finalCtxDetail}  
+
 ## กติกาการตอบ:
-1. หากคำถามเป็นเชิงภาพรวม → ตอบโดยใช้เฉพาะข้อมูลจากชุดที่ 1  
-2. หากคำถามเจาะจงถึงหัวข้อย่อย → ตอบโดยใช้ข้อมูลจากชุดที่ 2  
-3. หากในชุดที่ 2 ไม่มีรายละเอียดเกี่ยวกับหัวข้อที่ถาม → ตอบว่า **"ไม่มีรายละเอียดเพิ่มเติม"**  
-4. จัดคำตอบในรูปแบบที่อ่านง่าย โดยใช้โครงสร้าง:  
-   - หัวข้อหลัก (Heading พร้อมเลขลำดับ: 1. 2. 3.)  
-   - รายการย่อย (bullet points) สำหรับรายละเอียด  
-5. หากพบสิทธิการอนุมัติที่ซ้ำกันหรือเหมือนกันในหลายฝ่าย → รวมเป็นหัวข้อเดียว เช่น  
-   - **"BoD, EX COM: มีอำนาจอนุมัติไม่จำกัด"**  
-6. ห้ามตอบคำถามที่ไม่เกี่ยวข้องกับ **นโยบายหรือขั้นตอนการอนุมัติ (DOA Cash)** และให้ปฏิเสธอย่างสุภาพ  
-## Output Format:
-- ใช้ภาษาไทย
-- แบ่งหัวข้อชัดเจน
-- ใช้เลขลำดับ + bullet
+1. ใช้ข้อมูลจากชุดที่ 2 เป็นหลัก เพราะมี metadata ครบถ้วน
+2. แสดงหมายเลขเอกสาร (No.) เสมอ เช่น "หัวข้อ 1.1 การตรวจสอบเพื่อเสนออนุมัติ..."
+3. แสดงสิทธิการอนุมัติตามที่ระบุใน metadata แต่ละเอกสาร
+
+จัดรูปแบบคำตอบ:
+- หัวข้อหลัก พร้อมเลข No.
+- สิทธิการอนุมัติ (ใช้จาก metadata)
+- หมายเหตุ (ถ้ามี)
+- co_approval (ถ้ามี)  
+- Form URL (ถ้ามี)
+- Note (ถ้ามี)
+
+
 `.trim();
 
     const prompt = ChatPromptTemplate.fromMessages([
@@ -227,14 +330,48 @@ export async function POST(req: NextRequest) {
       { configurable: { sessionId } }
     );
 
+    // 🔧 แยกเอา USED_DOC ออกจาก response
+    const responseContent = response.content.toString();
+    const usedDocMatch = responseContent.match(/\[USED_DOC:\s*([^\]]+)\]/);
+    const usedDocNo = usedDocMatch ? usedDocMatch[1].trim() : null;
+    
+    // ลบ [USED_DOC: ...] ออกจากคำตอบที่แสดงให้ผู้ใช้
+    const cleanContent = responseContent.replace(/\[USED_DOC:[^\]]+\]/g, '').trim();
+    
+    // หาเอกสารที่ใช้จาก usedDocNo
+    const usedDoc = usedDocNo ? 
+      processedDocs.find(doc => doc.metadata.no === usedDocNo) : 
+      processedDocs[0];
+
+    console.log("🎯 AI used document:", usedDocNo || "ไม่ระบุ");
+
     return NextResponse.json({
-      content: response.content,
+      content: cleanContent,
       type: "text",
       timestamp: new Date().toISOString(),
       sessionId,
       isNewSession: isNew,
       sessionUpdated: updated,
+      // 🔧 ส่ง metadata เฉพาะเอกสารที่ AI ใช้ตอบจริง
+      metadata: {
+        usedDocument: usedDoc ? {
+          no: usedDoc.metadata.no,
+          category: usedDoc.metadata.category,
+          businessActivity: usedDoc.metadata.businessActivity,
+          group: usedDoc.metadata.group,
+          remarks: usedDoc.metadata.remarks,
+          formUrl: usedDoc.metadata.formUrl,
+          coApproval: usedDoc.metadata.coApproval,
+          approvalDetails: usedDoc.metadata.approvalDetails,
+          subGroup: usedDoc.metadata.subGroup,
+          note: usedDoc.metadata.note
+        } : null,
+        searchQuery: lastUserMessage,
+        totalDocuments: docs.length,
+        usedDocNo: usedDocNo
+      }
     });
+
   } catch (err) {
     console.error("LLM/Route Error:", err);
     return NextResponse.json(

@@ -172,7 +172,7 @@ export default function ChatPage(props: userProps) {
         // เพิ่มข้อความ loading ก่อน
         setMessages(prev => [...prev, { text: '', sender: 'bot' }])
         
-        const res = await fetch('/api/DOA-chat', {
+        const res = await fetch('/api/DOA-chat2', {
           method: 'POST',
           headers: {'Content-Type':'application/json'},
           body: JSON.stringify({ messages: [] }), 

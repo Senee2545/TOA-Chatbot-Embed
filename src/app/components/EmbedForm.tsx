@@ -1,6 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'
 
-import React, { } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+//import Image from 'next/image'
 
 interface EmbedSettings {
   width: string
@@ -10,6 +12,10 @@ interface EmbedSettings {
   buttonColor: string
   borderRadius: string
   dataSource: string
+
+  // image icon config
+  botName:  string
+  botIcon: string
 }
 
 interface EmbedFormProps {
@@ -17,8 +23,24 @@ interface EmbedFormProps {
   onSettingsChange: (settings: EmbedSettings) => void
 }
 
+// 🔧 เพิ่ม Debug ใน isImageUrl function
+const isImageUrl = (raw: string) => {
+  if (!raw) return false
+  const str = raw.trim()
+  return (
+    /^https?:\/\/.+/i.test(str) ||      // http/https
+    /^data:image\//i.test(str) ||       // base64 data url
+    /^blob:/.test(str)                  // blob url
+  )
+}
+
 export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps) {
   //const [saved, setSaved] = useState(false)
+
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null)
+  const [uploadError, setUploadError] = useState<string>('')
+
+
 
   // ฐานข้อมูลที่มีให้เลือก
   const dataSources = [
@@ -34,19 +56,57 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
       description: 'ข้อมูลเกี่ยวกับApproval',
       icon: ''
     },
-    // {
-    //   id: 'doachatwithsession',
-    //   name: 'doachatwithsession',
-    //   description: 'ข้อมูลเกี่ยวกับApproval',
-    //   icon: ''
-    // },
-    // {
-    //   id: 'DOA-chat-version1',
-    //   name: 'DOA-chat-version1',
-    //   description: 'ข้อมูลเกี่ยวกับApproval',
-    //   icon: ''
-    // },
   ]
+
+
+  // ฟังก์ชันเช็คว่าเป็น URL หรือไม่
+// 🔧 แก้ไขฟังก์ชันให้เช็ค undefined/null
+
+const lastObjectUrlRef = useRef<string | null>(null)
+
+useEffect(() => {
+  const v = (settings.botIcon || '').trim()
+  if (v.startsWith('blob:')) {
+    if (lastObjectUrlRef.current && lastObjectUrlRef.current !== v) {
+      URL.revokeObjectURL(lastObjectUrlRef.current)
+    }
+    lastObjectUrlRef.current = v
+  }
+  return () => {
+    if (lastObjectUrlRef.current) {
+      URL.revokeObjectURL(lastObjectUrlRef.current)
+      lastObjectUrlRef.current = null
+    }
+  }
+}, [settings.botIcon])
+
+
+const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0]
+  if (!file) return
+
+  if (file.size > 2 * 1024 * 1024) {
+    setUploadError('ขนาดไฟล์ใหญ่เกินไป (ไม่เกิน 2MB)')
+    return
+  }
+  if (!file.type.startsWith('image/')) {
+    setUploadError('กรุณาเลือกไฟล์รูปภาพเท่านั้น')
+    return
+  }
+
+  setUploadError('')
+  setUploadProgress(100)
+
+  // ✅ ใช้ Blob URL
+  const objectUrl = URL.createObjectURL(file)
+  handleChange('botIcon', objectUrl)
+
+  // ✅ ปิด progress ทันทีที่ตั้งค่าเสร็จ (กันค้าง 100%)
+  setTimeout(() => setUploadProgress(null), 0)
+}
+
+
+
 
   const handleChange = (key: keyof EmbedSettings, value: string) => {
     const newSettings = { ...settings, [key]: value }
@@ -88,6 +148,36 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
     onSettingsChange(newSettings)
   }
 
+
+// 🔧 Component แสดง Icon
+const BotIcon = ({ icon, className = "" }: { icon: string, className?: string }) => {
+  const v = (icon || '').trim()
+  if (!v) return <span className={className}>🤖</span>
+
+  const mustBeImg = /^data:image\//i.test(v) || /^blob:/i.test(v)
+  if (mustBeImg || isImageUrl(v)) {
+    return (
+      <img
+        src={v}
+        alt="Bot Icon"
+        className={`${className} object-cover rounded-full`}
+        // crossOrigin ไม่จำเป็นสำหรับ blob/https ปกติ แต่ใส่ได้ถ้าอยากชัวร์:
+        crossOrigin="anonymous"
+        onLoad={() => setUploadProgress(null)}   // ✅ โหลดเสร็จ ปิด spinner
+        onError={(e) => {
+          const target = e.currentTarget
+          target.style.display = 'none'
+          if (target.parentElement) {
+            target.parentElement.innerHTML = '<span class="text-2xl">🤖</span>'
+          }
+        }}
+      />
+    )
+  }
+  return <span className={className}>{v || '🤖'}</span>
+}
+
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       {/* Header */}
@@ -107,6 +197,133 @@ export default function EmbedForm({ settings, onSettingsChange }: EmbedFormProps
       </div>
 
       <div className="p-6 space-y-6">
+
+
+            {/* ชื่อแชทบอท */}
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-2">
+                ชื่อแชทบอท
+              </label>
+              <input
+                type="text"
+                value={settings.botName}
+                onChange={(e) => handleChange('botName', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="ชื่อแชทบอทของคุณ"
+              />
+            </div>
+
+
+
+
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-2">
+                ไอคอนแชทบอท
+              </label>
+              
+              {/* พรีวิว Icon */}
+          <div className="flex items-center space-x-3 mb-3">
+            <div className="flex items-center justify-center w-12 h-12 bg-white border border-gray-300 rounded-lg overflow-hidden">
+              <BotIcon 
+        icon={settings.botIcon} 
+        className={isImageUrl(settings.botIcon || '') ? "w-full h-full object-cover" : "text-lg"}
+        
+      />
+
+            </div>
+          
+<div className="text-sm text-gray-600">
+  {(settings.botIcon && settings.botIcon.startsWith('data:')) ? '📁 ไฟล์จากเครื่อง' :
+   isImageUrl(settings.botIcon || '') ? 'รูปภาพ URL' : 'Emoji Icon'}
+</div>
+          </div>
+
+
+              {/* 🆕 File Upload Section */}
+          <div className="space-y-3">
+            {/* Upload Button */}
+            <div className="relative">
+              <input
+                type="file"
+                id="iconUpload"
+                accept="image/*"
+                onChange={handleFileUpload}
+                className="sr-only"
+              />
+              <label
+                htmlFor="iconUpload"
+                className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all duration-200"
+              >
+                <div className="text-center">
+                  {uploadProgress !== null ? (
+                    <div className="space-y-2">
+                      <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                      <div className="text-xs text-blue-600">กำลังอัปโหลด {Math.round(uploadProgress)}%</div>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      <svg className="w-8 h-8 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      <div className="text-sm text-gray-600">คลิกเพื่อเลือกรูป</div>
+                      <div className="text-xs text-gray-500">PNG, JPG, GIF ขนาดไม่เกิน 2MB</div>
+                    </div>
+                  )}
+                </div>
+              </label>
+            </div>
+            {/* Upload Error */}
+            {uploadError && (
+              <div className="flex items-center space-x-2 text-red-600 bg-red-50 px-3 py-2 rounded-lg">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <span className="text-sm">{uploadError}</span>
+              </div>
+            )}
+
+            {/* Divider */}
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-white px-2 text-gray-500">Preview</span>
+              </div>
+            </div>
+
+
+
+
+
+
+{/* พรีวิวแชทบอท */}
+<div className="border border-gray-200 rounded-lg p-3 bg-white">
+  <p className="text-xs font-medium text-gray-500 mb-2">Header:</p>
+  <div className="flex items-center space-x-3">
+    <div 
+      className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden"
+      style={{ 
+        backgroundColor: settings.buttonColor + '20', 
+        color: settings.buttonColor,
+        border: `2px solid ${settings.buttonColor}40`
+      }}
+    >
+      <BotIcon 
+        icon={settings.botIcon} 
+        className={isImageUrl(settings.botIcon || '') ? "w-full h-full object-cover" : "text-lg"}
+      />
+    </div>
+    <div>
+      <div className="font-medium text-sm" style={{ color: settings.textColor }}>
+        {settings.botName || 'แชทบอท'}
+      </div>
+    </div>
+  </div>
+</div>
+            
+            </div>
+            </div>
 
         {/* เพิ่มส่วนเลือกฐานข้อมูล */}
         <div>

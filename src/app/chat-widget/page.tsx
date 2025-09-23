@@ -20,6 +20,38 @@ interface ChatSettings {
   borderRadius: string
   position: string
   dataSource: string
+  //
+  botName: string
+  botIcon: string
+}
+
+// BotIcon component 
+const BotIcon = ({ icon, className = "" }: { icon: string, className?: string }) => {
+  const v = (icon || '').trim()
+  if (!v) return <span className={`${className} flex items-center justify-center`}>🤖</span>
+
+  const mustBeImg = /^data:image\//i.test(v) || /^blob:/i.test(v)
+  if (mustBeImg || /^https?:\/\/.+/i.test(v)) { 
+    return (
+      <div className={`${className} flex items-center justify-center overflow-hidden`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={v}
+          alt="Bot Icon"
+          className="w-full h-full object-cover rounded-full"
+          crossOrigin="anonymous"
+          onError={(e) => {
+            const target = e.currentTarget
+            target.style.display = 'none'
+            if (target.parentElement) {
+              target.parentElement.innerHTML = '<span class="flex items-center justify-center text-2xl">🤖</span>'
+            }
+          }}
+        />
+      </div>
+    )
+  }
+  return <span className={`${className} flex items-center justify-center text-lg`}>{v || '🤖'}</span>
 }
 
 function linkify(text: string) {
@@ -83,7 +115,10 @@ export default function ChatWidget() {
     buttonColor: '#007bff',
     borderRadius: '12px',
     position: 'center',
-    dataSource: ''
+    dataSource: '',
+    //
+    botName: 'แชทบอท',
+    botIcon: '🤖',
   })
 
 
@@ -119,16 +154,14 @@ useEffect(() => {
       buttonColor: params.get('buttonColor') || '#007bff',
       borderRadius: params.get('borderRadius') || '12px',
       position: params.get('position') || 'center',
-      dataSource: params.get('dataSource') || ''
+      dataSource: params.get('dataSource') || '',
+      //
+      botName: params.get('botName') || 'แชทบอท',
+      botIcon: params.get('botIcon') || '🤖',
     }
-    
-    //console.log('🎯 New settings to set:', newSettings)
-    //console.log('🎯 Previous settings:', settings)
     
     setSettings(newSettings)
     
-    //console.log('🎯 Settings updated to:', newSettings)
-
     if (params.get('position') === 'bottom-right') {
       document.body.style.background = 'transparent'
       document.documentElement.style.background = 'transparent'
@@ -428,6 +461,9 @@ const renderMessage = (msg: Message) => {
 }
 
 
+
+
+
   // สำหรับ Preview Mode (center)
   if (settings.position === 'center') {
     return (
@@ -455,10 +491,13 @@ const renderMessage = (msg: Message) => {
         >
           <div className="flex items-center space-x-2">
             <div className="flex items-center justify-center w-8 h-8 bg-white rounded-full bg-opacity-20">
-              🤖
+              <BotIcon 
+              icon={settings.botIcon} 
+              className="w-full h-full text-lg"
+            />
             </div>
             <div>
-              <div className="text-sm font-medium">แชทบอท</div>
+              <div className="text-sm font-medium">{settings.botName || "แชทบอท"}</div>
               <div className="text-xs opacity-80">
                 {isLoading ? 'กำลังพิมพ์...' : 'ออนไลน์'}
                 </div>
@@ -583,10 +622,13 @@ return (
         >
           <div className="flex items-center space-x-2">
             <div className="flex items-center justify-center w-8 h-8 bg-white rounded-full bg-opacity-20">
-              🤖
+              <BotIcon 
+              icon={settings.botIcon} 
+              className="w-full h-full text-lg"
+            />
             </div>
             <div>
-              <div className="text-sm font-medium">แชทบอท</div>
+              <div className="text-sm font-medium">{settings.botName}</div>
               <div className="text-xs opacity-80">
               {isLoading ? 'กำลังพิมพ์...' : 'ออนไลน์'}
             </div>
@@ -622,7 +664,7 @@ return (
                   {/* คู่มือการใช้งาน */}
                   <button
                     onClick={() => {
-                      window.open('/manual/manual.txt', '_blank')
+                      window.open('/manual/Localize AI.pdf', '_blank')
                       setShowMenu(false)
                     }}
                     className="flex items-center w-full px-4 py-2 space-x-2 text-sm text-left bg-white hover:bg-gray-300"

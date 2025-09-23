@@ -53,7 +53,7 @@ export default function Home() {
             </Link>
 
             {/* Sign Up Button */}
-            <Link
+            {/* <Link
               href="/auth/sign-up"
               className="w-full py-4 px-6 bg-white/50 hover:bg-white/70 border border-white/30 text-gray-700 font-medium rounded-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] backdrop-blur-sm flex items-center justify-center space-x-3 group"
             >
@@ -61,7 +61,7 @@ export default function Home() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
               </svg>
               <span className="text-lg">สมัครสมาชิก</span>
-            </Link>
+            </Link> */}
           </div>
 
           {/* Features */}

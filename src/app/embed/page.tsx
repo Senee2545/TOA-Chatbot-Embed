@@ -14,6 +14,9 @@ interface EmbedSettings {
   buttonColor: string
   borderRadius: string 
   dataSource: string
+  //
+  botName: string
+  botIcon: string
 }
 
 export default function EmbedPage() {
@@ -24,7 +27,9 @@ export default function EmbedPage() {
     textColor: '#000000',
     buttonColor: '#007bff',
     borderRadius: '8',
-    dataSource: 'DOA-chat2'  // ค่าเริ่มต้นเป็น 'DOA-chat'
+    dataSource: 'DOA-chat2',  // ค่าเริ่มต้นเป็น 'DOA-chat2'
+    botName: 'แชทบอท', //  ค่า default
+    botIcon: '🤖', //  ค่า default
   })
   const [copied, setCopied] = useState(false)
 
@@ -34,7 +39,7 @@ export default function EmbedPage() {
     // await saveUserSettings(newSettings)
   }
 
-  const generateIframeCode = () => {
+    const generateIframeCode = () => {
     const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
     const queryParams = new URLSearchParams({
       width: `${settings.width}px`,
@@ -44,21 +49,30 @@ export default function EmbedPage() {
       buttonColor: settings.buttonColor,
       borderRadius: `${settings.borderRadius}px`,
       position: 'bottom-right',
-      dataSource: settings.dataSource
+      dataSource: settings.dataSource,
+      //
+      botName: settings.botName,
+      botIcon: settings.botIcon,
     })
+
+    // 🔧 ใช้ขนาดตาม settings + เพิ่ม padding เล็กน้อย
+    const iframeWidth = parseInt(settings.width) + 40 // เพิ่ม 40px สำหรับ padding
+    const iframeHeight = parseInt(settings.height) + 100 // เพิ่ม 80px สำหรับ float button
 
     return `<iframe
   src="${baseUrl}/chat-widget?${queryParams.toString()}"
   style="
     position: fixed;
-    bottom: 0;
-    right: 0;
-    width: 100vw;
-    height: 100vh;
+    bottom: 20px;
+    right: 20px;
+    width: ${settings.width}px;
+    height: ${iframeHeight}px;
     border: none;
     background: transparent;
     z-index: 9999;
     pointer-events: auto;
+    border-radius: ${settings.borderRadius}px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
   "
   title="Chatbot Widget">
 </iframe>`
@@ -198,7 +212,9 @@ export default function EmbedPage() {
                         buttonColor: settings.buttonColor,
                         borderRadius: `${settings.borderRadius}px`,
                         position: 'bottom-right',
-                        dataSource: settings.dataSource
+                        dataSource: settings.dataSource,
+                        botName: settings.botName,
+                        botIcon: settings.botIcon,
                       }).toString()}`
                       window.open(url, '_blank')
                     }}

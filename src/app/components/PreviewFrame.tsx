@@ -10,6 +10,8 @@ interface EmbedSettings {
   buttonColor: string
   borderRadius: string
   dataSource: string
+  botName: string
+  botIcon: string
 }
 
 interface PreviewFrameProps {
@@ -28,7 +30,9 @@ export default function PreviewFrame({ settings }: PreviewFrameProps) {
       buttonColor: settings.buttonColor,
       borderRadius: `${settings.borderRadius}px`,
       position: 'center', // สำหรับ preview ให้อยู่กลาง
-      dataSource: settings.dataSource 
+      dataSource: settings.dataSource,
+      botName: settings.botName,
+      botIcon: settings.botIcon || '🤖',  
     })
 
     return `/chat-widget?${queryParams.toString()}`
@@ -43,7 +47,9 @@ export default function PreviewFrame({ settings }: PreviewFrameProps) {
       buttonColor: settings.buttonColor,
       borderRadius: `${settings.borderRadius}px`,
       position: 'bottom-right', // สำหรับ embed จริงให้อยู่มุมขวาล่าง
-      dataSource: settings.dataSource
+      dataSource: settings.dataSource,
+      botName: settings.botName,
+      botIcon: settings.botIcon || '🤖',
     })
 
     return `/chat-widget?${queryParams.toString()}`
