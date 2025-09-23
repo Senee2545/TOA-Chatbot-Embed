@@ -51,7 +51,6 @@ const BotIcon = ({ icon, className = "" }: { icon: string, className?: string })
   if (mustBeImg || /^https?:\/\/.+/i.test(v)) { 
     return (
       <div className={`${className} flex items-center justify-center overflow-hidden`}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={v}
           alt="Bot Icon"
