@@ -27,7 +27,7 @@ export default function EmbedPage() {
     textColor: '#000000',
     buttonColor: '#007bff',
     borderRadius: '8',
-    dataSource: 'DOA-chat2',  // ค่าเริ่มต้นเป็น 'DOA-chat2'
+    dataSource: 'DOA-chat3',  // ค่าเริ่มต้นเป็น 'DOA-chat2'
     botName: 'แชทบอท', //  ค่า default
     botIcon: '/images/logo.png', //  ค่า default
   })
