@@ -139,7 +139,7 @@ const SYNONYM_SETS = [
     
   },
   {
-    triggers: ['บริจาคสี',"การบริจาคสินค้าของบริษัท เพื่อการกุศล","การบริจาคสินค้าของบริษัท"],
+    triggers: ['บริจาคสี',"สีบริจาค","การบริจาคสินค้าของบริษัท เพื่อการกุศล","การบริจาคสินค้าของบริษัท"],
     expand: [ 
       "Company's Finished Goods (FG) Donation",
       "FG (Re-Condition)",
@@ -235,7 +235,6 @@ export async function POST(req: NextRequest) {
     
     const ctxDetail = docsNew
     .map((d) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       
       return [
         d.pageContent,
@@ -288,7 +287,6 @@ export async function POST(req: NextRequest) {
 1. หากคำถามเป็นเชิงภาพรวม → ใช้เฉพาะข้อมูลจากชุดที่ 1  
 2. หากคำถามเจาะจงถึงหัวข้อย่อย → ใช้ข้อมูลจากชุดที่ 2  
 3. หากชุดที่ 2 ไม่มีรายละเอียดของหัวข้อที่ถาม → ตอบว่า **"ไม่มีรายละเอียดเพิ่มเติม"**  
-ึุ4. ห้ามตอบคำถามที่ไม่เกี่ยวข้องกับ **นโยบายหรือขั้นตอนการอนุมัติ (DOA Cash)** หากพบให้ปฏิเสธอย่างสุภาพ  
 ## รูปแบบคำตอบ (Output Format):
 - อ้างอิง DOA หัวข้อ **"no"** เสมอ
 - ใช้ภาษาไทยเท่านั้น  
