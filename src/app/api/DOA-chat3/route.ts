@@ -147,6 +147,15 @@ const SYNONYM_SETS = [
     ],
     
   },
+  {
+    triggers: ['ค่าบริจาค',"ค่าสนับสนุน","ค่าใช้จ่ายด้าน CSR","ค่าใช้จ่ายCSR"],
+    expand: [ 
+      "Donation",
+      "Sponsorship",
+      "CSR Expenses",
+    ],
+    
+  },
 ];
 
 // ฟังก์ชันขยายคำถามด้วย synonyms
@@ -314,7 +323,7 @@ export async function POST(req: NextRequest) {
 
     /** 3.6 Invoke LLM */
     const response = await chain.invoke(
-      { input: lastUserMessage },
+      { input: expandedQuestion },
       { configurable: { sessionId } }
     );
 
