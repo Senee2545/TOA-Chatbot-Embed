@@ -158,6 +158,9 @@ export default function ChatWidget() {
   })
 
 
+  const [isInitializing, setIsInitializing] = useState(true)
+
+
   // โหลด sessionId จาก localStorage เมื่อเริ่มต้น
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -206,6 +209,9 @@ useEffect(() => {
     if (params.get('position') === 'center') {
       setIsOpen(true)
     }
+    setTimeout(() => {
+      setIsInitializing(false)
+    }, 150)
   }, []) // empty dependency array
 
 // เพิ่ม useEffect เพื่อ track การเปลี่ยนแปลงของ settings
@@ -640,8 +646,11 @@ useEffect(() => {
 
 
 return (
-  
-    <>
+    
+    <div style={{ 
+      opacity: isInitializing ? 0 : 1, 
+      transition: 'opacity 0.3s ease-in-out' 
+    }}>
     {/* Chat Widget - แสดงเมื่อเปิด */}
     {isOpen && (
       <div
@@ -719,10 +728,26 @@ return (
                     className="flex items-center w-full px-4 py-2 space-x-2 text-sm text-left bg-white hover:bg-gray-300"
                     style={{ color: settings.textColor }}
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
                     </svg>
                     <span>คู่มือการใช้งาน</span>
+                  </button>
+
+
+                  {/* Survey Form */}
+                  <button
+                    onClick={() => {
+                      window.open('', '_blank')
+                      setShowMenu(false)
+                    }}
+                    className="flex items-center w-full px-4 py-2 space-x-2 text-sm text-left bg-white hover:bg-gray-300"
+                    style={{ color: settings.textColor }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+                    </svg>
+                    <span>Survey Form</span>
                   </button>
                   
                   {/* Private Chat */}
@@ -866,6 +891,6 @@ return (
         </div>
       )} */}
     </button>
-  </>
+  </div>
 )
 }

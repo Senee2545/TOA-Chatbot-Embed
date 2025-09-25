@@ -2,19 +2,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatPromptTemplate, MessagesPlaceholder } from "@langchain/core/prompts";
-import { RunnableWithMessageHistory } from "@langchain/core/runnables";
-import { PostgresChatMessageHistory } from "@langchain/community/stores/message/postgres";
+//import { RunnableWithMessageHistory } from "@langchain/core/runnables";
+//import { PostgresChatMessageHistory } from "@langchain/community/stores/message/postgres";
 import pg from "pg";
 import { createClient } from "@/lib/supabase/server";
-
+ 
 import { getDOA_Main_Retriever } from "@/lib/doa_main_retriever";
 import { getDOARetrieverNew } from "@/lib/doa_new_retriever";
 import { z } from "zod";
 import crypto from "crypto";
-
+import { tr } from "zod/v4/locales";
+ 
 /** =========================
- *  1) Config & Singletons
- *  ========================= */
+*  1) Config & Singletons
+*  ========================= */
 // ป้องกันการสร้าง pg.Pool ต่อ request → ใช้ module-scope singleton
 const pool = new pg.Pool({
   host: process.env.PG_HOST,
@@ -27,22 +28,22 @@ const pool = new pg.Pool({
   idleTimeoutMillis: 10_000,
   connectionTimeoutMillis: 5_000,
 });
-
+ 
 // สร้าง ChatOpenAI ไว้ระดับโมดูล (ปลอดภัย/ไม่มี per-user state)
 const model = new ChatOpenAI({
   model: "gpt-4o-mini",
   temperature: 0.3,
-  maxTokens: 1500,
+  maxTokens: 3000,
   cache: true,
 });
-
+ 
 // Zod schema สำหรับ body
 const BodySchema = z.object({
   messages: z
     .array(
       z.object({
-
-
+ 
+ 
         role: z.enum(["user", "assistant", "system"]).optional(),
         content: z.string(),
       })
@@ -50,14 +51,14 @@ const BodySchema = z.object({
     .default([]),
   sessionId: z.string().optional(),
 });
-
+ 
 // type message ที่ใช้จริง
 type ChatMessage = z.infer<typeof BodySchema>["messages"][number];
-
+ 
 /** =========================
- *  2) Utilities
- *  ========================= */
-
+*  2) Utilities
+*  ========================= */
+ 
 // จำกัดความยาว context แบบง่าย (ป้องกัน prompt ยาวเกิน/ token ระเบิด)
 function clampText(input: string, maxChars: number) {
   if (input.length <= maxChars) return input;
@@ -66,24 +67,24 @@ function clampText(input: string, maxChars: number) {
   const tail = Math.floor(maxChars * 0.3);
   return `${input.slice(0, head)}\n...\n${input.slice(-tail)}`;
 }
-
+ 
 function sanitizeCurlyBraces(input: string) {
   return input.replace(/[{}]/g, "");
 }
-
+ 
 // สร้าง/บังคับใช้ sessionId ที่เสถียร
 function resolveSessionId(opts: {
   userId?: string;
   current?: string;
 }): { sessionId: string; isNew: boolean; updated: boolean } {
   const { userId, current } = opts;
-
+ 
   // มี user → ผูกกับ userId (ยืนยาว)
   if (userId) {
     const updated = current !== userId;
     return { sessionId: userId, isNew: false, updated };
   }
-
+ 
   // anonymous → ใช้ widget_* + อายุ 1 วัน
   const ONE_DAY = 86_400_000;
   if (current && current.startsWith("widget_")) {
@@ -93,25 +94,19 @@ function resolveSessionId(opts: {
       return { sessionId: current, isNew: false, updated: false };
     }
   }
-
+ 
   // สร้างใหม่
   const timestamp = Date.now().toString(36);
   const rand = crypto.randomBytes(8).toString("base64url");
   const sessionId = `widget_${timestamp}_${rand}`;
   return { sessionId, isNew: true, updated: true };
 }
-
-// ห่อ history ด้วย singleton pool
-function getHistory(sessionId: string) {
-  return new PostgresChatMessageHistory({
-    sessionId,
-    tableName: "langchain_chat_history",
-    pool,
-  });
-}
-
+ 
+ 
+ 
 // เพิ่มชุดคำพ้อง (synonyms) ที่ต้องการ
 const SYNONYM_SETS = [
+  // 1.2, 1.3, 1.4
   {
     triggers: ["อบรม", "ฝึกอบรม", "การอบรม", "การฝึกอบรม", "training", "l&d"],
     expand: [
@@ -119,42 +114,173 @@ const SYNONYM_SETS = [
       "training expenses",
     ],
   },
-   {
+  // 1.5
+  {
+    triggers: ["เบิกค่าเบี้ยเลี้ยง", "เบี้ยเลี้ยง",  "เบิกค่าเดินทาง", "ค่าเดินทาง", "เบิกค่าที่พัก",  "ค่าที่พัก", "เบี้ยเลี้ย"],
+    expand: [
+      "Reimbursement for Per Diem",
+      "Lodging and Travelling expenses",
+    ],
+  },
+  // 2.1
+  {
+    triggers: ["ค่าน้ำมันตาม สิทธิตามตำแหน่ง ", "Fleet Card สิทธิตามตำแหน่ง", "บัตรฟลีท" , "Fleet Card"],
+    expand: [
+      "Gasoline Expenses as per Fleet Card",
+    ],
+  },
+  // 2.4
+  {
+    triggers: ["พิมนามบัตร", "ค่าโทรสับ",  "โทรสับ", "ค่าไปรษณี", "ค่าห้องออกกำลังกาย",  "สื่อสั่งพิม",  "ค่าถ่ายเอกสาร", "ไปรษณีย์"],
+    expand: [
+      "Car parking",
+      "Name card",
+      "Telephone",
+      "Postage",
+      "Fitness", 
+      "Newspaper", 
+      "Photocopy"
+    ],
+  },
+  // 3.3.1, 3.3.2, 3.4
+  {
     triggers: ["การเบิกและเคลียร์เงินทดรองจ่าย","เงินทดลองจ่าย","เบิกเงินล่วงหน้า","เบิกเงินทดรองจ่าย","เบิกทดลองจ่าย","การเบิกและเคลียร์เงินทดลองจ่าย"],
-    expand: [ 
+    expand: [
       "Advance payment and clearing",
       "Overseas trip",
       "Domestic activity",
       "Sales & Marketing activity"
-
-
     ],
-    
   },
+  // 3.5, 3.5.1, 3.5.2
   {
-    triggers: ["การอนุมัติเงินทดรองจ่ายค่าภาษีอากรนำเข้าและส่งออกสินค้า","อนุมัติเงินทดรองจ่ายค่าภาษีอากรนำเข้าและส่งออกสินค้า","เงินทดรองจ่ายค่าภาษีอากรนำเข้า","เงินทดรองจ่ายค่าภาษีอากรส่งออกสินค้า","ทดรองจ่ายค่าภาษีอากรนำเข้า","ทดรองจ่ายค่าภาษีอากรส่งออกสินค้า"],
-    expand: [ 
-      "Advance payment for import and export taxes",
+    triggers: ["เลี้ยรับรอง", "ให้ของขวัญ", "เลี้ยงรับรอง"],
+    expand: [
+      "Entertainment & Gift for Company Business"
     ],
-    
   },
+  // 3.6
+  {
+    triggers: ['ค่าบริจาค',"ค่าสนับสนุน","ค่าใช้จ่ายด้าน CSR","ค่าใช้จ่ายCSR", "CSR"],
+    expand: [
+      "Donation",
+      "Sponsorship",
+      "CSR Expenses",
+    ],
+  },
+  // 3.7.1, 3.7.2
   {
     triggers: ['บริจาคสี',"สีบริจาค","การบริจาคสินค้าของบริษัท เพื่อการกุศล","การบริจาคสินค้าของบริษัท"],
-    expand: [ 
+    expand: [
       "Company's Finished Goods (FG) Donation",
       "FG (Re-Condition)",
       "Normal FG",
     ],
     
   },
+  // 8.2
   {
-    triggers: ['ค่าบริจาค',"ค่าสนับสนุน","ค่าใช้จ่ายด้าน CSR","ค่าใช้จ่ายCSR"],
-    expand: [ 
-      "Donation",
-      "Sponsorship",
-      "CSR Expenses",
+    triggers: ["การอนุมัติเงินทดรองจ่ายค่าภาษีอากรนำเข้าและส่งออกสินค้า","อนุมัติเงินทดรองจ่ายค่าภาษีอากรนำเข้าและส่งออกสินค้า","เงินทดรองจ่ายค่าภาษีอากรนำเข้า","เงินทดรองจ่ายค่าภาษีอากรส่งออกสินค้า","ทดรองจ่ายค่าภาษีอากรนำเข้า","ทดรองจ่ายค่าภาษีอากรส่งออกสินค้า"],
+    expand: [
+      "Advance payment for import and export taxes",
     ],
-    
+  },
+  // 8.4
+  {
+    triggers: ["การขอชดเชย", "สิทธิทางภาษี", "ประโยชน์ทางภาษี"],
+    expand: [
+      "Refund custom tax",
+    ],
+  },
+  // 10.1
+  {
+    triggers: ["เอกสารหน่วยงานราชการ" , "หน่วยงานราชการ" , "ราชการ" , "ส่งเอกสารราชการ" ],
+    expand: [
+      "Documents to Government Agent",
+    ],
+  },
+  // 10.2
+  {
+    triggers: ["เอกสารบัญชี" , "เอกสารเกี่ยวกับบัญชี" , "เอกสารการเงิน" , "เอกสารเกี่ยวกับการเงิน" ],
+    expand: [
+      "Finance and Accounting Related",
+    ],
+  },
+  // 10.3
+  {
+    triggers: ["เอกสารที่ไม่ใช่บัญชี" , "เอกสารที่ไม่เกี่ยวกับบัญชี" , "เอกสารที่ไม่ใช่การเงิน" , "เอกสารที่ไม่เกี่ยวกับการเงิน" ],
+    expand: [
+      "Non-Finance and Accounting Related",
+    ],
+  },
+  //10.4
+  {
+    triggers: ["ข้อมูลความลับของบริษัท" , "ความลับของบริษัท" , "ความลับ"],
+    expand: [
+      "Company's Confidential Information",
+    ],
+  },
+  
+  // triggers Main Topic
+  {
+    triggers: ["ข้อ1","ข้อ 1","ข้อ.1","ข้อ. 1","no1","no 1","no.1","no. 1"],
+    expand: [
+      "EMPLOYEE BENEFITS",
+    ],  
+  },
+  {
+    triggers: ["ข้อ2","ข้อ 2","ข้อ.2","ข้อ. 2","no2","no 2","no.2","no. 2"],
+    expand: [
+      "GENERAL ADMIN EXPENSES",
+    ],  
+  },
+  {
+    triggers: ["ข้อ3","ข้อ 3","ข้อ.3","ข้อ. 3","no3","no 3","no.3","no. 3"],
+    expand: [
+      "FINANCE & ACCOUNTING",
+    ],  
+  },
+  {
+    triggers: ["ข้อ4","ข้อ 4","ข้อ.4","ข้อ. 4","no4","no 4","no.4","no. 4"],
+    expand: [
+      "SALES & MARKETING EXPENSES",
+    ],  
+  },
+  {
+    triggers: ["ข้อ5","ข้อ 5","ข้อ.5","ข้อ. 5","no5","no 5","no.5","no. 5"],
+    expand: [
+      "CAPEX INVESTMENT (Purchase/Rent/Lease)",
+    ],  
+  },
+  {
+    triggers: ["ข้อ6","ข้อ 6","ข้อ.6","ข้อ. 6","no6","no 6","no.6","no. 6"],
+    expand: [
+      "PROCUREMENT",
+    ],  
+  },
+  {
+    triggers: ["ข้อ7","ข้อ 7","ข้อ.7","ข้อ. 7","no7","no 7","no.7","no. 7"],
+    expand: [
+      "SUPPLY & FG REQUISITION (LOGISTICS)",
+    ],  
+  },
+  {
+    triggers: ["ข้อ8","ข้อ 8","ข้อ.8","ข้อ. 8","no8","no 8","no.8","no. 8"],
+    expand: [
+      "IMPORT & EXPORT (SHIPPING)",
+    ],  
+  },
+  {
+    triggers: ["ข้อ9","ข้อ 9","ข้อ.9","ข้อ. 9","no9","no 9","no.9","no. 9"],
+    expand: [
+      "LOAN TO OR BETWEEN SUBSIDIARY COMPANY",
+    ],  
+  },
+  {
+    triggers: ["ข้อ10","ข้อ 10","ข้อ.10","ข้อ. 10","no10","no 10","no.10","no. 10"],
+    expand: [
+      "CORPORATE DOCUMENTS COMMUNICATED TO OUTSIDERS",
+    ],  
   },
 ];
 
@@ -170,29 +296,50 @@ function expandWithSynonyms(q: string) {
   if (bag.size === 0) return q;
   return `${q} ${Array.from(bag).join(" ")}`;
 }
-
+ 
+ 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function preprocessCeckNo(input : any) {
+  const no = input.trim();
+// ตรวจสอบว่าเป็นเลขหัวข้อแบบ 1.1.1.1
+if (/^\d+(\.\d+)+$/.test(no)) {
+  return {no};
+}
+  // ตรวจสอบว่าเป็นเลขหัวข้อแบบ 1.1.1
+  if (/^\d+(\.\d+)+$/.test(no)) {
+    return {no};
+  }
+ 
+  // ตรวจสอบว่าเป็นเลขทศนิยมหรือจำนวนเต็ม
+  if (/^-?\d+(\.\d+)?$/.test(no)) {
+    return {no};
+  }
+ 
+  // ถ้าไม่ใช่ตัวเลขเลย
+  return {};
+}
 /** =========================
- *  3) Route Handler
- *  ========================= */
-
+*  3) Route Handler
+*  ========================= */
+ 
 export async function POST(req: NextRequest) {
   try {
     // 3.1 ตรวจ auth
     const supabase = await createClient();
     const { data: authData } = await supabase.auth.getUser();
     const userId = authData.user?.id;
-
+ 
     // 3.2 parse body (validate)
     const raw = await req.json();
     const body = BodySchema.parse(raw);
     const messages: ChatMessage[] = body.messages;
-
+ 
     // 3.3 resolve session
     const { sessionId, isNew, updated } = resolveSessionId({
       userId,
       current: body.sessionId,
     });
-
+ 
     // Greeting (ไม่มีข้อความเลย)
     if (messages.length === 0) {
       return NextResponse.json({
@@ -216,31 +363,32 @@ export async function POST(req: NextRequest) {
         sessionUpdated: updated,
       });
     }
-
+ 
     const lastUserMessage = messages[messages.length - 1]?.content ?? "";
-
+ 
+    const FILTER_QUESTION = preprocessCeckNo(lastUserMessage);
     const expandedQuestion = expandWithSynonyms(lastUserMessage);
     if (expandedQuestion !== lastUserMessage) {
       console.log("Expanded with synonyms:", expandedQuestion);
     }
-    console.log("Expanded with synonyms:", expandedQuestion);
-
+ 
+    
     /** 3.4 RAG: ดึง context (ลด await ซ้ำ ๆ, ทำงานขนาน) */
     const [ doaMainRetriever, doaRetrieverNew] = await Promise.all([
       getDOA_Main_Retriever(),
-      getDOARetrieverNew()
+      getDOARetrieverNew(5,FILTER_QUESTION)
     ]);
-
-
+ 
+ 
     // เรียก parallel
     const [ mainDocs, docsNew] = await Promise.all([
       doaMainRetriever.invoke(expandedQuestion),
       doaRetrieverNew.invoke(expandedQuestion),
     ]);
-    console.log("🔍 Retrieved docs:", docsNew);
+    console.log("🔍 Retrieved docs:", mainDocs);
  
     
-
+ 
     
     const ctxDetail = docsNew
     .map((d) => {
@@ -262,18 +410,18 @@ export async function POST(req: NextRequest) {
       ].join("\n");
     })
     .join("\n\n---\n\n");
-
+ 
     // 🔧 สร้าง detailed context ที่ content + metadata อยู่ด้วยกัน
   
-
+ 
     // Main context (ภาพรวม)
     const ctxMain = sanitizeCurlyBraces(
       clampText(mainDocs.map(d => d.pageContent).join("\n\n"), 8_000)
     );
-
+ 
     // Sanitize final context
     const finalCtxDetail = sanitizeCurlyBraces(clampText(ctxDetail, 12_000));
-
+ 
     // ลด noisy log + ไม่ log เนื้อหา (ป้องกันข้อมูลอ่อนไหว)
     // if (process.env.NODE_ENV !== "production") {
     //   console.log("🔑 sessionId:", sessionId);
@@ -285,10 +433,10 @@ export async function POST(req: NextRequest) {
     //     category: processedDocs[0].metadata.category.substring(0, 50)
     //   } : "No metadata");
     // }
-
+ 
     /** 3.5 Prompt */
     const SYSTEM_PROMPT = `
-คุณคือ AI Chatbot ผู้เชี่ยวชาญด้าน **นโยบายและขั้นตอนการอนุมัติ (DOA Cash)**  
+# คุณคือผู้ช่วย AI Chatbot เกี่ยวกับนโยบายและขั้นตอนการอนุมัติ (DOA Cash)ของบริษัท TOA Group
 ## Context
 - ชุดที่ 1 = ข้อมูลภาพรวม/หัวข้อหลัก: """${ctxMain}"""
 - ชุดที่ 2 = ข้อมูลรายละเอียดของหัวข้อ: """${finalCtxDetail}"""  
@@ -298,7 +446,7 @@ export async function POST(req: NextRequest) {
 3. หากชุดที่ 2 ไม่มีรายละเอียดของหัวข้อที่ถาม → ตอบว่า **"ไม่มีรายละเอียดเพิ่มเติม"**  
 ## รูปแบบคำตอบ (Output Format):
 - อ้างอิง DOA หัวข้อ **"no"** เสมอ
-- ใช้ภาษาไทยเท่านั้น  
+- ตอบเป็นภาษาไทยเท่านั้น  
 - หากมีอำนาจอนุมัติซ้ำกันหรือเหมือนกันในหลายตำแหน่ง → รวมเป็นหัวข้อเดียว เช่น:**"BoD, EXCOM: มีอำนาจอนุมัติไม่จำกัด หรือ อื่นๆ"**  
 - แบ่งหัวข้อชัดเจน  
 - ใช้เลขลำดับ (1., 2., 3.) สำหรับหัวข้อหลัก  
@@ -306,36 +454,56 @@ export async function POST(req: NextRequest) {
 - หากชุดที่ 2 มีหลายหัวข้อที่เกี่ยวข้อง → ตอบเป็นข้อ ๆ โดยแสดงชื่อหัวข้อ แต่ยังไม่ต้องลงรายละเอียดการอนุมัติ  ให้ต่อ "หากต้องการรายละเอียดเพิ่มเติม ให้พิมพ์ หัวข้อที่ต้องการ"
 - ไม่ควรแนะนำหรือข้อมูลที่ไม่อยู่ใน <docs>
 `.trim();
-
+ 
     const prompt = ChatPromptTemplate.fromMessages([
       ["system", SYSTEM_PROMPT],
       ["user", "{input}"],
     ]);
-
+ 
     const chain = prompt.pipe(model);
-
+ 
     // const chainWithHistory = new RunnableWithMessageHistory({
     //   runnable: chain,
     //   getMessageHistory: (sid) => getHistory(sid),
     //   inputMessagesKey: "input",
     //   historyMessagesKey: "history",
     // });
-
+ 
     /** 3.6 Invoke LLM */
+    
     const response = await chain.invoke(
       { input: expandedQuestion },
       { configurable: { sessionId } }
     );
-
+ 
     // 🔧 แยกเอา USED_DOC ออกจาก response
-   
-   
-    
-   
-    
-   
-
-
+    //Insert History
+    await supabase.from("langchain_chat_history").insert([
+        {
+          session_id: sessionId,
+          message: JSON.stringify({
+            type: "human",
+            content: expandedQuestion,
+            additional_kwargs: {},
+            response_metadata: {}
+          })
+        },
+        {
+          session_id: sessionId,
+          message: JSON.stringify({
+            id: response.id,
+            type: "ai",
+            content: response.content as string,
+            tool_calls: response.tool_calls || [],
+            usage_metadata: response.usage_metadata || {},
+            additional_kwargs: {},
+            response_metadata: response.response_metadata || {},
+            invalid_tool_calls: response.invalid_tool_calls || []
+          })
+        }
+      ]);
+ 
+ 
     return NextResponse.json({
       content: response.content,
       type: "text",
@@ -344,7 +512,7 @@ export async function POST(req: NextRequest) {
       isNewSession: isNew,
       sessionUpdated: updated,
     });
-
+ 
   } catch (err) {
     console.error("LLM/Route Error:", err);
     return NextResponse.json(
