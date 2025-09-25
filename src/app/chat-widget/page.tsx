@@ -150,7 +150,7 @@ export default function ChatWidget() {
     textColor: '#000000',
     buttonColor: '#007bff',
     borderRadius: '12px',
-    position: 'center',
+    position: '',
     dataSource: '',
     //
     botName: 'แชทบอท',
@@ -209,9 +209,8 @@ useEffect(() => {
     if (params.get('position') === 'center') {
       setIsOpen(true)
     }
-    setTimeout(() => {
-      setIsInitializing(false)
-    }, 150)
+    
+    setIsInitializing(false)
   }, []) // empty dependency array
 
 // เพิ่ม useEffect เพื่อ track การเปลี่ยนแปลงของ settings
@@ -515,7 +514,10 @@ useEffect(() => {
   }
 }, [isOpen])
 
-
+  if (isInitializing) {
+    return null
+  }
+  
   // สำหรับ Preview Mode (center)
   if (settings.position === 'center') {
     return (
@@ -658,8 +660,8 @@ return (
           position: 'fixed',
           bottom: '100px', // เว้นระยะจากปุ่ม
           right: '20px',
-          width: settings.width,
-          height: settings.height,
+          width: `min(${settings.width}, 90vw)`, // ใช้ค่า settings แต่จำกัดไม่เกิน 95vw
+          height: `min(${settings.height}, 80vh)`, // ใช้ค่า settings แต่จำกัดไม่เกิน 85vh
           backgroundColor: settings.bgColor,
           borderRadius: settings.borderRadius,
           boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
@@ -789,7 +791,7 @@ return (
         <div 
           className="flex-1 p-4 space-y-3 overflow-y-auto"
           style={{ 
-            height: `calc(${settings.height} - 140px)`,
+            height: `calc(min(${settings.height}, 85vh) - 140px)`, // คำนวณจาก responsive height
             backgroundColor: settings.bgColor 
           }}
         >
@@ -861,8 +863,10 @@ return (
       className="relative w-16 h-16 transition-all duration-300 transform rounded-full shadow-lg hover:shadow-xl hover:scale-110"
       style={{ 
         position: 'fixed',
-        bottom: '20px',
-        right: '20px',
+        bottom: 'clamp(15px, 3vh, 20px)', // responsive bottom
+        right: 'clamp(15px, 3vw, 20px)', // responsive right
+        width: 'clamp(50px, 12vw, 64px)', // responsive size
+        height: 'clamp(50px, 12vw, 64px)',
         zIndex: 3,
         backgroundColor: settings.buttonColor,
         color: '#ffffff',

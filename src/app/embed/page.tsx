@@ -271,8 +271,15 @@ export default function EmbedPage() {
           const width = params.get('width');
           const height = params.get('height');
 
-          const widthNum = width ? parseInt(width.replace('px', '')) + 40 : 440;
-          const heightNum = height ? parseInt(height.replace('px', '')) + 100 : 700;
+          const currentWidth = 
+          parseInt(iframe.style.width.replace('px', ''));
+          const currentHeight = 
+          parseInt(iframe.style.height.replace('px', ''));
+
+          const widthNum = 
+          width ? parseInt(width.replace('px', '')) + 40 : currentWidth + 40;
+          const heightNum = 
+          height ? parseInt(height.replace('px', '')) + 150 : currentHeight + 150;
 
           iframe.style.width = \`\${widthNum}px\`;
           iframe.style.height = \`\${heightNum}px\`;
